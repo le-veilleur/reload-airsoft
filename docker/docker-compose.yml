@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  react-app:
+    container_name: reload
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ..:/reload-airsoft-front
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

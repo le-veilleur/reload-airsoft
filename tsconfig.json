@@ -1,26 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "target": "es5", // Cible la version ES5
+    "module": "commonjs", // Utilise le module CommonJS (adapté pour Node.js)
+    "lib": ["dom", "es5", "es2015.promise"],
+    "allowJs": true, // Permet les fichiers JavaScript en plus des TypeScript
+    "skipLibCheck": true, // Ignore la vérification des types dans les fichiers de définition
+    "esModuleInterop": true, // Permet l'interopérabilité avec les modules CommonJS
+    "allowSyntheticDefaultImports": true, // Permet les imports par défaut synthétiques
+    "strict": true, // Active toutes les vérifications strictes
+    "forceConsistentCasingInFileNames": true, // Assure une casse cohérente des noms de fichiers
+    "noFallthroughCasesInSwitch": true, // Préviens les cas manquants dans les switchs
+    "moduleResolution": "node", // Résolution des modules en mode Node.js
+    "resolveJsonModule": true, // Permet l'importation de modules JSON
+    "isolatedModules": true, // Assure que chaque fichier est traité comme un module isolé
+    "noEmit": true, // Empêche l'émission de fichiers de sortie
+    "jsx": "react-jsx" // Permet l'utilisation de JSX avec React
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
