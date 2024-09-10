@@ -8,12 +8,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "gris-bleute":"#e2e7ec",
+        "gris-bleute": "#e2e7ec",
       },
       backgroundImage: {
-        "bgi-card":"url('/public/images/topographic-map-background-design/4031277.jpg')",
-      }
+        "bgi-card": "url('/public/images/topographic-map-background-design/4031277.jpg')",
+      },
+      fontFamily: {
+        Montserrat: ['Montserrat', 'sans-serif'], // Ajoute la police Mustafar
+        bioweapon: ['Bioweapon', 'sans-serif'], // Ajoute la police Bioweapon
+      },
     },
   },
   plugins: [],
-}
+};

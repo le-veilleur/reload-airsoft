@@ -11,24 +11,23 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="relative bg-transparent border-none bg-Light-Powder-Blue">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <div className="flex items-center">
+    <nav className="relative bg-transparent border-none">
+      <div className="container mx-auto flex justify-between items-center p-3">
+        {/* Partie gauche avec le titre et Événements */}
+        <div className="flex items-center space-x-6">
           <h1 className="text-2xl font-bold">
             <Link to="/" className="hover:underline text-black">
               Reload-Airsoft
             </Link>
           </h1>
+          {/* Ajout de marge à gauche du lien Événements */}
+          <Link to="/events" className="px-3 py-2 text-sm font-medium ml-4 font-Montserrat">
+            Événements
+          </Link>
         </div>
+
+        {/* Partie droite avec Connexion et Inscription */}
         <ul className="flex items-center space-x-6">
-          <li>
-            <Link
-              to="/events"
-              className="px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Événements
-            </Link>
-          </li>
           {isAuthenticated ? (
             <li className="relative">
               <button
@@ -60,7 +59,7 @@ const Navbar: React.FC = () => {
                   <li>
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 hover:bg-gray-200"
+                      className="block px-4 py-2 font-Montserrat hover:bg-gray-200"
                     >
                       Mon Profil
                     </Link>
@@ -71,7 +70,7 @@ const Navbar: React.FC = () => {
                         logout();
                         setDropdownOpen(false);
                       }}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                      className="block w-full text-left font-Montserrat px-4 py-2 hover:bg-gray-200"
                     >
                       Déconnexion
                     </button>
@@ -84,7 +83,7 @@ const Navbar: React.FC = () => {
               <li>
                 <Link
                   to="/login"
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-md transition-colors"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 font-Montserrat rounded-md transition-colors"
                 >
                   Connexion
                 </Link>
@@ -92,7 +91,7 @@ const Navbar: React.FC = () => {
               <li>
                 <Link
                   to="/register"
-                  className="bg-green-600 hover:bg-green-500 text-white font-bold px-4 py-2 rounded-md transition-colors"
+                  className="bg-green-600 hover:bg-green-500 text-white font-bold px-4 py-2 font-Montserrat rounded-md transition-colors"
                 >
                   Inscription
                 </Link>

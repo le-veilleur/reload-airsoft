@@ -8,10 +8,10 @@ import Home from "../Pages/Home";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
 import ForgotPassword from "../auth/ForgotPassword";
-import Events from "../Pages/events/Events";
-import EventDetails from "../Components/Events/EventDetails"; // Assurez-vous d'importer ce composant correctement
+import EventDetailPage from "../Pages/events/EventDetailPage"; // Assurez-vous d'importer ce composant correctement
 import Profile from "../user/Profile/ProfileOverview";
 import PrivateRoute from "../Router/PrivateRoute";
+import EventsPage from "../Pages/events/Events";
 
 const AppRoutes: React.FC = () => (
   <Router>
@@ -23,8 +23,8 @@ const AppRoutes: React.FC = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/event/evenements/:id" element={<EventDetails />} />{" "}
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/event/evenements/:id" element={<EventDetailPage />} />
           {/* Correction ici */}
           {/* Routes protégées */}
           <Route element={<PrivateRoute />}>

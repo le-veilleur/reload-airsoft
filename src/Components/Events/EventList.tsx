@@ -52,8 +52,7 @@ const EventList: React.FC = () => {
           title={event.title}
           date={event.start_date}
           location={event.location}
-          images={event.images}
-        />
+          images={event.images} time={""} description={""}        />
       ))}
     </div>
   );

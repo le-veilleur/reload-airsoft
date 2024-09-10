@@ -1,50 +1,90 @@
+// src/Components/EventCard.tsx
+
 import React from "react";
-import { Link } from "react-router-dom"; // Assurez-vous d'avoir installé react-router-dom
+import { Link } from "react-router-dom";
 
 interface EventCardProps {
   id: number;
   title: string;
   date: string;
+  time: string;
   location: string;
   images: string[];
+  description: string;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
   id,
   title,
   date,
+  time,
   location,
-  images
+  images,
+  description
 }) => {
-  console.log("Rendering EventCard:", { title, date, location, images });
-
   return (
-    <div className="event-card border p-4 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold">{title}</h2>
-      <p className="text-gray-600">{date}</p>
-      <p className="text-gray-600">{location}</p>
-      <div className="image-gallery mt-2">
-        {images.length > 0 ? (
-          images.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`${title} image ${index + 1}`}
-              className="w-full h-auto mt-2 rounded"
-            />
-          ))
-        ) : (
-          <p className="text-gray-500">No images available</p>
-        )}
+    <div className="p-3 bg-white shadow-md rounded-lg cursor-pointer">
+      {/* Images  Affichage de la première image si disponible*/}
+      {images.length > 0 ? (
+        <img
+          src={images[0]}
+          alt={title}
+          className="w-full h-55  bg-no-repeat mb-4 rounded"
+          onError={(e) => {
+            console.error("Failed to load image:", images[0]);
+            e.currentTarget.src = "/images/shutterstock_761941054.jpg";
+          }}
+        />
+      ) : (
+        <img
+          src="/images/shutterstock_761941054.jpg"
+          alt="Placeholder"
+          className="w-full h-48 object-cover mb-4 rounded"
+        />
+      )}
+
+      {/* Title */}
+      <h3 className="font-bold font-Montserrat text-xl">{title}</h3>
+
+      {/* Date */}
+      <div className="text-gray-600 mb-2 flex items-center">
+        <img
+          src="/images/icons/calendar.svg"
+          alt="Date icon"
+          className="w-4 h-4 mr-2"
+        />
+        <span>{date}</span>
       </div>
-      <div className="mt-4">
-        <Link
-          to={`/events/${id}`} // Utilise l'ID pour la route
-          className="text-blue-500 hover:underline"
-        >
+
+      {/* Time */}
+      <div className="text-gray-600 mb-2 flex items-center">
+        <img
+          src="/images/icons/clock.svg"
+          alt="Time icon"
+          className="w-4 h-4 mr-2"
+        />
+        <span>{time}</span>
+      </div>
+
+      {/* Location */}
+      <div className="text-gray-600 mb-4 flex items-center">
+        <img
+          src="/images/icons/map-pin.svg"
+          alt="Location icon"
+          className="w-4 h-4 mr-2"
+        />
+        <span>{location}</span>
+      </div>
+
+      {/* Description */}
+      <p className="mb-4 font-Montserrat">{description}</p>
+
+      {/* View More Button */}
+      <Link to={`/events/${id}`}>
+        <button className="bg-blue-800 text-white py-2 px-4 rounded-full font-Montserrat">
           Voir plus
-        </Link>
-      </div>
+        </button>
+      </Link>
     </div>
   );
 };

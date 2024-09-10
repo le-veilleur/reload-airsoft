@@ -1,8 +1,10 @@
+// src/pages/EventsPage.tsx
+
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getAllEvents } from "../../Services/eventService";
 import SearchBar from "../../common/SearchBar";
 import EventMap from "../../Components/Maps/EventMap";
+import EventCard from "../../Components/Events/EventCard";
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
@@ -53,71 +55,23 @@ const EventsPage: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 border-none bg-gris-bleute">
           {error && <p className="text-red-500">{error}</p>}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {events.map((event) => {
-              return (
-                <div
-                  key={event.ID}
-                  className="p-4 bg-white shadow-md rounded-lg cursor-pointer"
-                  onClick={() => handleEventClick(event)}
-                >
-                  {event.images && event.images.length > 0 ? (
-                    <img
-                      src={event.images[0].url}
-                      alt={event.title}
-                      className="w-full h-48 object-cover mb-4 rounded"
-                      onError={(e) => {
-                        console.error(
-                          "Failed to load image:",
-                          event.images[0].url
-                        );
-                        e.currentTarget.src =
-                          "/images/shutterstock_761941054.jpg";
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src="/images/shutterstock_761941054.jpg"
-                      alt="Placeholder"
-                      className="w-full h-48 object-cover mb-4 rounded"
-                    />
-                  )}
-                  <h3 className="text-xl font-bold">{event.title}</h3>
-
-                  <div className="text-gray-600 mb-2 flex items-center">
-                    <img
-                      src="/images/icons/calendar.svg"
-                      alt="Date icon"
-                      className="w-4 h-4 mr-2"
-                    />
-                    <span>{event.start_date}</span>
-                  </div>
-
-                  <div className="text-gray-600 mb-2 flex items-center">
-                    <img
-                      src="/images/icons/clock.svg"
-                      alt="Time icon"
-                      className="w-4 h-4 mr-2"
-                    />
-                    <span>{event.start_time}</span>
-                  </div>
-
-                  <div className="text-gray-600 mb-4 flex items-center">
-                    <img
-                      src="/images/icons/map-pin.svg"
-                      alt="Location icon"
-                      className="w-4 h-4 mr-2"
-                    />
-                    <span>{event.location}</span>
-                  </div>
-                  <p className="mb-4">{event.description}</p>
-                  <Link to={`/event/evenements/${event.ID}`}>
-                    <button className="bg-blue-800 text-white py-2 px-4 rounded-full">
-                      Voir plus
-                    </button>
-                  </Link>
-                </div>
-              );
-            })}
+            {events.map((event) => (
+              <div
+                key={event.ID}
+                className="cursor-pointer"
+                onClick={() => handleEventClick(event)}
+              >
+                <EventCard
+                  id={event.ID}
+                  title={event.title}
+                  date={event.start_date}
+                  time={event.start_time}
+                  location={event.location}
+                  images={event.images.map((img: { url: any; }) => img.url)} // Assurez-vous que `event.images` est un tableau d'URLs
+                  description={event.description}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>

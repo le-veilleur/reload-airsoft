@@ -17,63 +17,49 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Appel à la fonction onSearch passée en props
     await onSearch({ date, time, location });
   };
 
   return (
-    <div className="flex justify-center pt-2">
-      <div className="p-4 shadow-xl rounded-lg border w-full max-w-4xl border-none bg-white">
-        <form onSubmit={handleSearch} className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[150px]">
-            <label
-              htmlFor="date"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Date
-            </label>
+    <div className="flex justify-center pt-4 px-4 sm:px-6 lg:px-8">
+      <div className="p-4 shadow-xl rounded-full border w-full max-w-4xl bg-white">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-col sm:flex-row items-center gap-4"
+        >
+          <div className="flex-1 w-full">
             <input
               type="date"
               id="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 "
+              placeholder="Date"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
             />
           </div>
-          <div className="flex-1 min-w-[150px]">
-            <label
-              htmlFor="time"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Heure
-            </label>
+          <div className="flex-1 w-full">
             <input
               type="time"
               id="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 "
+              placeholder="Heure"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
             />
           </div>
-          <div className="flex-1 min-w-[150px]">
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Lieu
-            </label>
+          <div className="flex-1 w-full">
             <input
               type="text"
               id="location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Rechercher un lieu"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2"
+              placeholder="Lieu"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
             />
           </div>
           <button
             type="submit"
-            className="self-end px-4 py-2 bg-indigo-900 text-white font-semibold rounded-md shadow-md focus:outline-none focus:ring-2"
+            className="w-full sm:w-auto px-4 py-2 bg-indigo-900 text-white font-semibold rounded-full shadow-md focus:outline-none focus:ring-2"
           >
             Rechercher
           </button>
