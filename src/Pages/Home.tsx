@@ -6,17 +6,22 @@ const Home = () => {
   const { isAuthenticated } = useAuth(); // Utilisation du hook pour obtenir l'état d'authentification
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="bg-gray-100">
       {/* Bannière d'Accueil */}
-      <div className="bg-blue-500 text-white text-center p-12">
-        <h1 className="text-4xl font-bold">Bienvenue sur Reload-Airsoft</h1>
-        <p className="mt-4 text-xl">
-          Découvrez les derniers événements, articles, et plus encore!
+
+      <div
+        className="bg-cover bg-center bg-no-repeat text-white text-center p-28"
+        style={{
+          backgroundImage: `url('images/pxfuel.jpg')`
+        }}
+      >
+        <p className="mt-4 text-gray-300 font-LeagueSpartan font-black text-5xl">
+          Prêt à vivre l'adrénaline ? Trouve ta prochaine <br /> partie
+          d'airsoft et rejoins la bataille dès <br /> aujourd'hui !
         </p>
-        <button className="mt-6 bg-white text-blue-500 px-4 py-2 rounded-lg shadow-md hover:bg-gray-200">
-          Découvrez Maintenant
-        </button>
       </div>
+
+      {/* Reste du code */}
 
       {/* Section Articles Récents */}
       <section className="p-8">

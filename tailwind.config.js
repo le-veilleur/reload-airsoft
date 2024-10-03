@@ -14,8 +14,9 @@ module.exports = {
         "bgi-card": "url('/public/images/topographic-map-background-design/4031277.jpg')",
       },
       fontFamily: {
-        Montserrat: ['Montserrat', 'sans-serif'], // Ajoute la police Mustafar
-        bioweapon: ['Bioweapon', 'sans-serif'], // Ajoute la police Bioweapon
+        Montserrat: ['Montserrat', 'sans-serif'],
+        bioweapon: ['Bioweapon', 'sans-serif'],
+        LeagueSpartan: ['League Spartan', 'sans-serif'],
       },
     },
   },
