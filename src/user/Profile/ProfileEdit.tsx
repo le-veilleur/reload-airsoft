@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 
 interface ProfileEditProps {
-  firstName: string;
-  lastName: string;
+  avatarUrl: string | null;
+  username: string;
+  FirstName: string;
+  LastName: string;
+  teams: string[];
   email: string;
+  onSave: () => void; // Fonction pour gérer la sauvegarde
 }
 
 const ProfileEdit: React.FC<ProfileEditProps> = ({
-  firstName,
-  lastName,
-  email
+  avatarUrl,
+  username,
+  FirstName,
+  LastName,
+  teams,
+  email,
+  onSave
 }) => {
-  const [formData, setFormData] = useState({ firstName, lastName, email });
+  const [formData, setFormData] = useState({
+    avatarUrl,
+    username,
+    FirstName,
+    LastName,
+    teams: teams.join(", "), // Convertir le tableau en chaîne
+    email
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -20,7 +35,9 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Envoyer les données mises à jour au serveur
+    // Ici, vous pouvez envoyer les données mises à jour au serveur
+    console.log("Données mises à jour : ", formData);
+    onSave(); // Appeler la fonction onSave après la sauvegarde
   };
 
   return (
@@ -29,8 +46,25 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Pseudo
+          </label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label
             htmlFor="firstName"
-            className="block text-sm font-medium text-gray-700 font-Montserrat"
+            className="block text-sm font-medium text-gray-700"
           >
             Prénom
           </label>
@@ -38,7 +72,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
             id="firstName"
             type="text"
             name="firstName"
-            value={formData.firstName}
+            value={formData.FirstName}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -47,7 +81,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         <div>
           <label
             htmlFor="lastName"
-            className="block text-sm font-medium text-gray-700 font-Montserrat"
+            className="block text-sm font-medium text-gray-700"
           >
             Nom de famille
           </label>
@@ -55,7 +89,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
             id="lastName"
             type="text"
             name="lastName"
-            value={formData.lastName}
+            value={formData.LastName}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -64,7 +98,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700 font-Montserrat"
+            className="block text-sm font-medium text-gray-700"
           >
             Email
           </label>
@@ -78,9 +112,26 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
+        <div>
+          <label
+            htmlFor="teams"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Équipes (séparées par des virgules)
+          </label>
+          <input
+            id="teams"
+            type="text"
+            name="teams"
+            value={formData.teams}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-Montserrat py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md"
         >
           Mettre à jour
         </button>

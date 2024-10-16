@@ -16,7 +16,7 @@ module.exports = {
       fontFamily: {
         Montserrat: ['Montserrat', 'sans-serif'],
         bioweapon: ['Bioweapon', 'sans-serif'],
-        LeagueSpartan: ['League Spartan', 'sans-serif'],
+        LeagueSpartan: ['League Spartan', 'sans-serif', 'black'],
       },
     },
   },

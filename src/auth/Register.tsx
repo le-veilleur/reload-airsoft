@@ -3,8 +3,8 @@ import { useAuth } from "../Contexts/AuthContext";
 import { useNavigate } from "react-router-dom"; // Importer useNavigate
 
 export interface RegisterFormProps {
-  first_name: string;
-  last_name: string;
+  FirstName: string;
+  LastName: string;
   email: string;
   password: string;
   username: string; // Nouveau champ pour le pseudo
@@ -12,8 +12,8 @@ export interface RegisterFormProps {
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<RegisterFormProps>({
-    first_name: "",
-    last_name: "",
+    FirstName: "",
+    LastName: "",
     email: "",
     password: "",
     username: "" // Initialisation du nouveau champ
@@ -48,12 +48,12 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateName(formData.first_name)) {
+    if (!validateName(formData.FirstName)) {
       setError("Le prénom ne peut pas être vide.");
       return;
     }
 
-    if (!validateName(formData.last_name)) {
+    if (!validateName(formData.LastName)) {
       setError("Le nom de famille ne peut pas être vide.");
       return;
     }
@@ -114,7 +114,7 @@ const Register: React.FC = () => {
             <input
               type="text"
               name="first_name"
-              value={formData.first_name}
+              value={formData.FirstName}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -127,7 +127,7 @@ const Register: React.FC = () => {
             <input
               type="text"
               name="last_name"
-              value={formData.last_name}
+              value={formData.LastName}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

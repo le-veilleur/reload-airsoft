@@ -9,14 +9,22 @@ export interface LoginData {
 }
 
 export interface RegisterData {
-  last_name: string;
-  first_name: string;
+  LastName: string;
+  FirstName: string;
   username: string; // Nouveau champ pour le pseudo
   email: string;
   password: string;
 }
 
 export interface AuthResponse {
+  user: {
+    AvatarURL: null;
+    FirstName: string;
+    LastName: string;
+    username: string; // Nouveau champ pour le pseudo
+    Email: string;
+    Roles: string[]; // Si c'est un tableau de chaînes
+  };
   access_token: string;
   refresh_token: string;
   email: string;
@@ -29,6 +37,7 @@ export interface AuthResponse {
 const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
     const response = await axios.post(`${API_URL}login`, data);
+    console.log("API Response:", response.data); // Ajoutez ceci
 
     if (response.data && response.data.access_token) {
       Cookies.set("JWT-Reload-airsoft", response.data.access_token, {

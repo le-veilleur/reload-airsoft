@@ -1,15 +1,26 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import Cookies from "js-cookie";
-import AuthService, { AuthResponse } from "../Services/AuthService";
-import { LoginFormProps } from "../auth/Login"; // Assurez-vous que le chemin est correct
-import { RegisterFormProps } from "../auth/Register";
+import AuthService, {
+  AuthResponse,
+  LoginData,
+  RegisterData
+} from "../Services/AuthService";
+
+export interface User {
+  FirstName: string;
+  LastName: string;
+  username: string; // Nouveau champ pour le pseudo
+  email: string;
+  teams: string[];
+  avatarUrl: string | null;
+}
 
 export interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
-  avatarUrl: string | null;
-  register: (userData: RegisterFormProps) => Promise<void>;
-  login: (credentials: LoginFormProps) => Promise<void>;
+  user: User | null;
+  register: (userData: RegisterData) => Promise<void>;
+  login: (credentials: LoginData) => Promise<void>;
   logout: () => void;
 }
 
@@ -22,23 +33,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     Cookies.get("JWT-Reload-airsoft") || null
   );
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const isAuthenticated = !!token;
 
-  const login = async (data: LoginFormProps) => {
+  const login = async (data: LoginData) => {
     try {
       const response: AuthResponse = await AuthService.login(data);
-      setToken(response.access_token);
-      setAvatarUrl(response.avatarUrl ?? null);
+      console.log("Response from API:", response); // Log la réponse complète ici
 
-      Cookies.set("JWT-Reload-airsoft", response.access_token, { expires: 7 });
+      // Assurez-vous que 'Roles' et 'email' sont présents
+      if (response.email && response.Roles) {
+        setToken(response.access_token);
+        setUser({
+          FirstName: "", // Définit par défaut ou récupérez d'une autre source si nécessaire
+          LastName: "", // Définit par défaut ou récupérez d'une autre source si nécessaire
+          username: response.email.split("@")[0], // Exemple de génération du pseudo à partir de l'email
+          email: response.email,
+          teams: response.Roles, // Utilisez directement Roles
+          avatarUrl: null // Vous pouvez définir une URL par défaut si vous en avez une
+        });
+        Cookies.set("JWT-Reload-airsoft", response.access_token, {
+          expires: 7
+        });
+      } else {
+        console.error("User data is undefined in response.");
+      }
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
 
-  const register = async (data: RegisterFormProps) => {
+  const register = async (data: RegisterData) => {
     try {
       await AuthService.register(data);
     } catch (error) {
@@ -48,13 +74,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setToken(null);
-    setAvatarUrl(null);
+    setUser(null);
     Cookies.remove("JWT-Reload-airsoft");
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, token, avatarUrl, login, register, logout }}
+      value={{ isAuthenticated, token, user, login, register, logout }}
     >
       {children}
     </AuthContext.Provider>
