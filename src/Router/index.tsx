@@ -34,8 +34,8 @@ const AppRoutes: React.FC = () => {
                 path="/profile"
                 element={
                   <Profile
-                    FirstName={user?.FirstName || ""}
-                    LastName={user?.LastName || ""}
+                    FirstName={user?.first_name || ""}
+                    LastName={user?.last_name || ""}
                     email={user?.email || ""}
                     avatarUrl={user?.avatarUrl || null}
                     username={user?.username || ""}
