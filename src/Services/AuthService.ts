@@ -9,16 +9,10 @@ const AuthService = {
   login: async (data: LoginData): Promise<AuthResponse> => {
     try {
       const response = await axios.post(`${API_URL}login`, data);
-      console.log("API Response:", response.data);
-
       if (response.data && response.data.access_token) {
         Cookies.set("JWT-Reload-airsoft", response.data.access_token, {
           expires: 7
         });
-        console.log(
-          "Token stocké dans les cookies: ",
-          Cookies.get("JWT-Reload-airsoft")
-        );
       } else {
         console.error("Token est indéfini dans la réponse");
       }

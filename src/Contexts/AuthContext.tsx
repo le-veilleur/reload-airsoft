@@ -1,7 +1,12 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import Cookies from "js-cookie";
 import AuthService from "../Services/AuthService";
-import { AuthResponse, LoginData, RegisterData, User } from "../Interfaces/types";
+import {
+  AuthResponse,
+  LoginData,
+  RegisterData,
+  User
+} from "../Interfaces/types";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
@@ -20,16 +25,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     Cookies.get("JWT-Reload-airsoft") || null
   );
-
   const [user, setUser] = useState<User | null>(null);
   const isAuthenticated = !!token;
 
-  const login = async (data: LoginData) => {
+  const login = async (data: LoginData): Promise<void> => {
     try {
       const response: AuthResponse = await AuthService.login(data);
-      console.log("Response from API:", response);
 
-      if (response.first_name && response.roles) {
+      if (response.access_token && response.first_name) {
         setToken(response.access_token);
         setUser({
           first_name: response.first_name,
@@ -37,22 +40,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: response.username,
           email: response.email,
           teams: response.roles,
-          avatarUrl: null
+          avatarUrl: response.avatarUrl || null // Supposons que cela fasse partie de la réponse
         });
-        Cookies.set("JWT-Reload-airsoft", response.access_token, { expires: 7 });
+        Cookies.set("JWT-Reload-airsoft", response.access_token, {
+          expires: 7,
+          secure: true
+        });
       } else {
-        console.error("User data is undefined in response.");
+        throw new Error("Données utilisateur incomplètes dans la réponse");
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Échec de la connexion :", error);
+      // Tu pourrais également gérer un état d'erreur ici pour l'afficher dans l'UI
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const register = async (data: RegisterData): Promise<void> => {
     try {
       await AuthService.register(data);
+      // Tu pourrais aussi connecter automatiquement l'utilisateur après l'inscription
     } catch (error) {
-      console.error("Registration failed:", error);
+      console.error("Échec de l'inscription :", error);
+      // Gérer l'erreur d'inscription ici si nécessaire
     }
   };
 
@@ -74,7 +83,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error(
+      "useAuth doit être utilisé à l'intérieur d'un AuthProvider"
+    );
   }
   return context;
 };

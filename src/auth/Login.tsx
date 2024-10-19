@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-
-// Définition de l'interface pour les données du formulaire de connexion
-export interface LoginFormProps {
-  email: string;
-  password: string;
-}
+import { LoginData } from "../Interfaces/types";
 
 const Login: React.FC = () => {
   // État pour stocker les données du formulaire et les messages d'erreur/success
-  const [formData, setFormData] = useState<LoginFormProps>({
+  const [formData, setFormData] = useState<LoginData>({
     email: "",
     password: ""
   });
@@ -23,7 +18,7 @@ const Login: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log("Form Data Change:", name, value);
+    // console.log("Form Data Change:", name, value);
   };
 
   // Validation de l'email
@@ -40,7 +35,7 @@ const Login: React.FC = () => {
   // Gestion de l'envoi du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data on Submit:", formData);
+    // console.log("Form Data on Submit:", formData);
 
     // Vérification des validations
     if (!validateEmail(formData.email)) {
