@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: response.username,
           email: response.email,
           teams: response.roles,
-          avatarUrl: response.avatarUrl || null // Supposons que cela fasse partie de la réponse
+          avatarUrl: null // L'avatarUrl n'est pas encore retourné par l'API
         });
         Cookies.set("JWT-Reload-airsoft", response.access_token, {
           expires: 7,

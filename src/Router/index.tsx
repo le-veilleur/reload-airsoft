@@ -12,6 +12,7 @@ import EventDetailPage from "../Pages/events/EventDetailPage";
 import Profile from "../user/Profile/ProfileOverview";
 import PrivateRoute from "../Router/PrivateRoute";
 import EventsPage from "../Pages/events/Events";
+
 import { useAuth } from "../Contexts/AuthContext";
 
 const AppRoutes: React.FC = () => {
@@ -19,35 +20,49 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/event/evenements/:id" element={<EventDetailPage />} />
-            <Route element={<PrivateRoute />}>
-              <Route
-                path="/profile"
-                element={
-                  <Profile
-                    FirstName={user?.first_name || ""}
-                    LastName={user?.last_name || ""}
-                    email={user?.email || ""}
-                    avatarUrl={user?.avatarUrl || null}
-                    username={user?.username || ""}
-                    teams={user?.teams || []}
-                  />
-                }
-              />
-              {/* Ajoutez d'autres routes protégées ici */}
-            </Route>
-          </Routes>
-        </main>
-        <Footer />
+        
+        <Routes>
+          {/* Route EventDetail en plein écran sans footer */}
+          <Route path="/event/evenements/:id" element={<EventDetailPage />} />
+          
+          {/* Autres routes avec layout normal */}
+          <Route path="/*" element={
+            <>
+              {/* Contenu principal qui prend tout l'espace disponible */}
+              <main className="flex-1 flex flex-col overflow-hidden">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/events" element={<EventsPage />} />
+                  
+                  <Route element={<PrivateRoute />}>
+                    <Route
+                      path="/profile"
+                      element={
+                        <Profile
+                          FirstName={user?.first_name || ""}
+                          LastName={user?.last_name || ""}
+                          email={user?.email || ""}
+                          avatarUrl={user?.avatarUrl || null}
+                          username={user?.username || ""}
+                          teams={user?.teams || []}
+                        />
+                      }
+                    />
+                    {/* Ajoutez d'autres routes protégées ici */}
+                  </Route>
+                </Routes>
+              </main>
+              
+              {/* Footer fixe en bas */}
+              <Footer />
+            </>
+          } />
+        </Routes>
       </div>
     </Router>
   );

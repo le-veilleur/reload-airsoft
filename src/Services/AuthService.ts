@@ -2,7 +2,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { LoginData, RegisterData, AuthResponse } from "../Interfaces/types";
 
-const API_URL = "http://127.0.0.1:8181/user/";
+// En développement, on utilise le proxy configuré dans package.json  
+// En production, vous devrez ajuster cette URL
+const API_URL = process.env.NODE_ENV === 'production' ? "http://localhost:8181/user/" : "/user/";
 
 const AuthService = {
   // Méthode pour la connexion
@@ -38,9 +40,7 @@ const AuthService = {
   // Méthode pour le rafraîchissement du token
   refreshToken: async (): Promise<string> => {
     try {
-      const response = await axios.get(`${API_URL}refresh-token`, {
-        withCredentials: true
-      });
+      const response = await axios.get(`${API_URL}refresh-token`);
       return response.data.access_token;
     } catch (error) {
       console.error("Erreur lors du rafraîchissement du token:", error);
@@ -51,7 +51,7 @@ const AuthService = {
   // Méthode pour la déconnexion
   logout: async (): Promise<void> => {
     try {
-      await axios.post(`${API_URL}logout`, {}, { withCredentials: true });
+      await axios.post(`${API_URL}logout`, {});
       Cookies.remove("JWT-Reload-airsoft");
     } catch (error) {
       console.error("Erreur lors de la déconnexion:", error);

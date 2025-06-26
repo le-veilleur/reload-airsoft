@@ -2,13 +2,14 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { Location } from "../../Interfaces/types";
 
 interface EventCardProps {
-  id: number;
+  id: string;
   title: string;
   date: string;
   time: string;
-  location: string;
+  location: Location;
   images: string[];
   description: string;
 }
@@ -25,7 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({
   return (
     <div className="p-3 bg-white shadow-md rounded-lg cursor-pointer">
       {/* Images  Affichage de la première image si disponible*/}
-      {images.length > 0 ? (
+      {images && Array.isArray(images) && images.length > 0 ? (
         <img
           src={images[0]}
           alt={title}
@@ -73,14 +74,19 @@ const EventCard: React.FC<EventCardProps> = ({
           alt="Location icon"
           className="w-4 h-4 mr-2"
         />
-        <span>{location}</span>
+        <span>
+          {location?.address ? 
+            location.address : 
+            `${location?.city || 'Ville non spécifiée'}${location?.country ? `, ${location.country}` : ''}`
+          }
+        </span>
       </div>
 
       {/* Description */}
       <p className="mb-4 font-Montserrat">{description}</p>
 
       {/* View More Button */}
-      <Link to={`/events/${id}`}>
+      <Link to={`/event/evenements/${id}`}>
         <button className="bg-blue-800 text-white py-2 px-4 rounded-full font-Montserrat">
           Voir plus
         </button>

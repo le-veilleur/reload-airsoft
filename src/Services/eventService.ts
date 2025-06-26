@@ -1,15 +1,18 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { CreateEventData, CreateEventResponse } from "../Interfaces/types";
 
-const API_BASE_URL = "http://127.0.0.1:8181";
+// TEMPORAIRE : URL directe vers le backend pour tester sans proxy
+const API_BASE_URL = "http://localhost:8080/api/v1";
 
 // Configuration globale d'Axios
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json"
-  },
-  withCredentials: true
+  }
+  // withCredentials retiré car il cause des problèmes CORS
+  // Le token sera envoyé via l'en-tête Authorization
 });
 
 // Intercepteur pour ajouter le token aux requêtes
@@ -29,7 +32,7 @@ api.interceptors.request.use(
 // Fonction pour obtenir tous les événements
 export const getAllEvents = async () => {
   try {
-    const response = await api.get("/evenements");
+    const response = await api.get("events");
     console.log("Réponse des événements : ", response.data);
     return response.data;
   } catch (error) {
@@ -40,7 +43,7 @@ export const getAllEvents = async () => {
 // Fonction pour obtenir un événement spécifique par ID
 export const getEventById = async (id: string) => {
   try {
-    const response = await api.get(`/evenements/${id}`);
+    const response = await api.get(`events/${id}`);
     console.log("Réponse des événements getEventById : ", response.data);
     return response.data;
   } catch (error) {
@@ -48,7 +51,7 @@ export const getEventById = async (id: string) => {
   }
 };
 
-// Fonction pour créer un nouvel événement
+// Fonction pour créer un nouvel événement (FormData - ancienne version)
 export const createEvent = async (eventData: FormData) => {
   try {
     const response = await api.post("/event/evenement/new", eventData, {
@@ -59,6 +62,18 @@ export const createEvent = async (eventData: FormData) => {
     return response.data;
   } catch (error) {
     handleAxiosError(error, "création de l'événement");
+  }
+};
+
+// Fonction pour créer un nouvel événement avec JSON
+export const createEventWithJson = async (eventData: CreateEventData): Promise<CreateEventResponse> => {
+  try {
+    const response = await api.post("events", eventData);
+    console.log("Événement créé avec succès :", response.data);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, "création de l'événement");
+    throw error;
   }
 };
 

@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 import { getAllEvents } from "../../Services/eventService";
-
-interface Event {
-  ID: number;
-  title: string;
-  start_date: string;
-  location: string;
-  images: string[];
-}
+import { Event } from "../../Interfaces/types";
 
 const EventList: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -21,7 +14,16 @@ const EventList: React.FC = () => {
         console.log("Fetching all events...");
         const data = await getAllEvents();
         console.log("Events fetched successfully:", data);
+        
+        // S'assurer que nous avons la structure attendue
+        if (data && data.events) {
+          setEvents(data.events);
+        } else if (Array.isArray(data)) {
         setEvents(data);
+        } else {
+          console.warn("Format de données inattendu:", data);
+          setEvents([]);
+        }
       } catch (err) {
         console.error("Error fetching events:", err);
         setError("Failed to fetch events");
@@ -47,12 +49,15 @@ const EventList: React.FC = () => {
     <div>
       {events.map((event) => (
         <EventCard
-          key={event.ID}
-          id={event.ID}
+          key={event.id}
+          id={event.id}
           title={event.title}
-          date={event.start_date}
+          date={event.date}
+          time={event.created_at ? new Date(event.created_at).toLocaleTimeString() : "Non spécifié"}
           location={event.location}
-          images={event.images} time={""} description={""}        />
+          images={event.image_urls || []}
+          description={event.description}
+        />
       ))}
     </div>
   );
