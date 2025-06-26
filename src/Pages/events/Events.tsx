@@ -55,7 +55,7 @@ const EventsPage: React.FC = () => {
       // Récupérer les événements (pour l'instant, pas de filtrage backend)
       const data = await getAllEvents();
       console.log("Events fetched successfully:", data);
-      const eventsArray = Array.isArray(data) ? data : data.events || [];
+      const eventsArray = data.events || [];
       setEvents(eventsArray);
       setError(null);
     } catch (error) {
@@ -72,7 +72,7 @@ const EventsPage: React.FC = () => {
       try {
         const data = await getAllEvents();
         console.log("Events fetched successfully:", data);
-        const eventsArray = Array.isArray(data) ? data : data.events || [];
+        const eventsArray = data.events || [];
         setEvents(eventsArray);
         setError(null);
       } catch (error) {
@@ -92,17 +92,17 @@ const EventsPage: React.FC = () => {
 
   // Préparer les événements pour la carte (filtrer ceux qui ont des coordonnées)
   const mapEvents = events
-    .filter(event => 
+    .filter((event: any) => 
       event.location?.latitude !== undefined && 
       event.location?.longitude !== undefined &&
       !isNaN(event.location.latitude) &&
       !isNaN(event.location.longitude)
     )
-    .map(event => ({
+    .map((event: any) => ({
       id: event.id,
       title: event.title || 'Événement sans titre',
-      latitude: event.location!.latitude,
-      longitude: event.location!.longitude,
+      latitude: event.location.latitude,
+      longitude: event.location.longitude,
       address: event.location?.address || 'Adresse non spécifiée'
     }));
 
@@ -143,36 +143,37 @@ const EventsPage: React.FC = () => {
                   <div className="text-gray-500">Chargement des événements...</div>
                 </div>
               )}
-              
-              {!loading && events.length === 0 && !error && (
+            
+            {!loading && events.length === 0 && !error && (
                 <div className="flex items-center justify-center p-8">
                   <div className="text-gray-500">Aucun événement trouvé.</div>
                 </div>
-              )}
-              
+            )}
+            
               {/* Liste des cartes d'événements */}
               <div className="space-y-4">
-                {events.map((event) => (
-                  <div
-                    key={event.id}
+              {events.map((event) => (
+                <div
+                  key={event.id}
                     className={`cursor-pointer transition-all duration-200 transform hover:scale-[1.02] ${
                       selectedEvent?.id === event.id 
                         ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' 
                         : 'hover:shadow-md'
-                    }`}
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <EventCard
-                      id={event.id}
-                      title={event.title || 'Titre non spécifié'}
-                      date={event.date || 'Date non spécifiée'}
-                      time={event.created_at ? new Date(event.created_at).toLocaleTimeString() : "Non spécifié"}
-                      location={event.location || { address: 'Lieu non spécifié', latitude: 0, longitude: 0 }}
-                      images={Array.isArray(event.image_urls) ? event.image_urls : []}
-                      description={event.description || 'Description non disponible'}
+                  }`}
+                  onClick={() => handleEventClick(event)}
+                >
+                                      <EventCard
+                        id={event.id}
+                      title={(event as any).title || 'Titre non spécifié'}
+                      date={(event as any).date || 'Date non spécifiée'}
+                      time={(event as any).created_at ? new Date((event as any).created_at).toLocaleTimeString() : "Non spécifié"}
+                      location={(event as any).location || { address: 'Lieu non spécifié', latitude: 0, longitude: 0 }}
+                      images={[]}
+                      description={(event as any).description || 'Description non disponible'}
+                      price={(event as any).price}
                     />
-                  </div>
-                ))}
+                </div>
+              ))}
               </div>
             </div>
           </div>
@@ -182,14 +183,14 @@ const EventsPage: React.FC = () => {
         <div className="w-2/3 relative h-full">
           {mapEvents.length > 0 || mapCenter ? (
             <div className="absolute inset-0">
-              <EventMap
-                events={mapEvents}
+            <EventMap
+              events={mapEvents}
                 centerLatitude={mapCenter?.latitude}
                 centerLongitude={mapCenter?.longitude}
                 centerZoom={mapCenter ? 12 : undefined}
-                height="100%"
-                zoom={12}
-              />
+              height="100%"
+              zoom={12}
+            />
             </div>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">

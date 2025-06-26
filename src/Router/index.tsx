@@ -23,33 +23,31 @@ const AppRoutes: React.FC = () => {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         
-        <Routes>
-          {/* Route EventDetail en plein écran sans footer */}
-          <Route path="/event/evenements/:id" element={<EventDetailPage />} />
-          
-          {/* Autres routes avec layout normal */}
-          <Route path="/*" element={
-            <>
-              {/* Contenu principal qui prend tout l'espace disponible */}
-              <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Contenu principal qui prend tout l'espace disponible */}
+        <main className="flex-1 flex flex-col overflow-hidden">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/events" element={<EventsPage />} />
+            
+            {/* Routes événements avec footer */}
+            <Route path="/events/:id/:slug" element={<EventDetailPage />} />
+            <Route path="/event/evenements/:id" element={<EventDetailPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
                   
                   <Route element={<PrivateRoute />}>
                     <Route
                       path="/profile"
                       element={
                         <Profile
-                          FirstName={user?.first_name || ""}
-                          LastName={user?.last_name || ""}
+                    FirstName={user?.firstname || ""}
+                    LastName={user?.lastname || ""}
                           email={user?.email || ""}
-                          avatarUrl={user?.avatarUrl || null}
-                          username={user?.username || ""}
-                          teams={user?.teams || []}
+                    avatarUrl={user?.profile_picture_url || null}
+                    username={user?.pseudonyme || ""}
+                                          teams={user?.role ? [user.role] : []}
                         />
                       }
                     />
@@ -57,12 +55,9 @@ const AppRoutes: React.FC = () => {
                   </Route>
                 </Routes>
               </main>
-              
-              {/* Footer fixe en bas */}
+        
+        {/* Footer fixe en bas */}
               <Footer />
-            </>
-          } />
-        </Routes>
       </div>
     </Router>
   );

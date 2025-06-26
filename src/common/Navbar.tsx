@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center space-x-2"
               >
                 <img
-                  src={user?.avatarUrl || "https://cdn.discordapp.com/attachments/1156985446161711165/1296157593051594773/1_lgZkB5FIZEqR6v-h_ZpCNw.png?ex=67114453&is=670ff2d3&hm=c45ab66a8a6a146b8d398feb08cee329dba9ec207d6fd9813482dbe7c8a84f15&"}
+                  src={user?.profile_picture_url || "https://cdn.discordapp.com/attachments/1156985446161711165/1296157593051594773/1_lgZkB5FIZEqR6v-h_ZpCNw.png?ex=67114453&is=670ff2d3&hm=c45ab66a8a6a146b8d398feb08cee329dba9ec207d6fd9813482dbe7c8a84f15&"}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full"
                 />

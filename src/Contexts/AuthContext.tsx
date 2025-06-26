@@ -5,13 +5,13 @@ import {
   AuthResponse,
   LoginData,
   RegisterData,
-  User
+  UserProfile
 } from "../Interfaces/types";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
-  user: User | null;
+  user: UserProfile | null;
   register: (userData: RegisterData) => Promise<void>;
   login: (credentials: LoginData) => Promise<void>;
   logout: () => void;
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     Cookies.get("JWT-Reload-airsoft") || null
   );
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const isAuthenticated = !!token;
 
   const login = async (data: LoginData): Promise<void> => {
@@ -35,12 +35,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.access_token && response.first_name) {
         setToken(response.access_token);
         setUser({
-          first_name: response.first_name,
-          last_name: response.last_name,
-          username: response.username,
+          firstname: response.first_name,
+          lastname: response.last_name,
+          pseudonyme: response.username,
           email: response.email,
-          teams: response.roles,
-          avatarUrl: null // L'avatarUrl n'est pas encore retourné par l'API
+          role: response.roles[0] || "player",   // Prendre le premier rôle
+          profile_picture_url: null, // L'avatarUrl n'est pas encore retourné par l'API
+          phone_number: null,
+          preferences: {}
         });
         Cookies.set("JWT-Reload-airsoft", response.access_token, {
           expires: 7,

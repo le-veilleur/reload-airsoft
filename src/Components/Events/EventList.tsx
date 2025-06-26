@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 import { getAllEvents } from "../../Services/eventService";
 import { Event } from "../../Interfaces/types";
+import { formatDateToFrench, extractTimeFromDate } from "../../utils/dateUtils";
 
 const EventList: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -11,21 +12,17 @@ const EventList: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log("Fetching all events...");
         const data = await getAllEvents();
-        console.log("Events fetched successfully:", data);
         
-        // S'assurer que nous avons la structure attendue
-        if (data && data.events) {
+        // Les données viennent avec la structure {events: Array, total: number}
+        if (data && data.events && Array.isArray(data.events)) {
           setEvents(data.events);
         } else if (Array.isArray(data)) {
-        setEvents(data);
+          setEvents(data);
         } else {
-          console.warn("Format de données inattendu:", data);
           setEvents([]);
         }
       } catch (err) {
-        console.error("Error fetching events:", err);
         setError("Failed to fetch events");
       } finally {
         setLoading(false);
@@ -36,28 +33,34 @@ const EventList: React.FC = () => {
   }, []);
 
   if (loading) {
-    console.log("Loading events...");
     return <div>Loading...</div>;
   }
 
   if (error) {
-    console.error("Error in EventList:", error);
     return <div>{error}</div>;
   }
 
   return (
     <div>
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          id={event.id}
-          title={event.title}
-          date={event.date}
-          time={event.created_at ? new Date(event.created_at).toLocaleTimeString() : "Non spécifié"}
-          location={event.location}
-          images={event.image_urls || []}
-          description={event.description}
-        />
+      {events.map((event: any) => (
+                  <EventCard
+            key={event.id}
+            id={event.id}
+            title={event.title}
+            date={formatDateToFrench(event.start_date || event.date)}
+            time={extractTimeFromDate(event.start_date || "") || "Heure non spécifiée"}
+            endTime={extractTimeFromDate(event.end_date || "")}
+            location={{
+              address: event.location?.address || "Adresse non disponible",
+              latitude: event.location?.latitude || 0,
+              longitude: event.location?.longitude || 0,
+              city: event.location?.city || "",
+              country: event.location?.country || ""
+            }}
+            images={[]} // Pas d'images dans la structure actuelle
+            description={event.description}
+            price={typeof event.price === 'string' ? parseInt(event.price) || 0 : event.price}
+          />
       ))}
     </div>
   );

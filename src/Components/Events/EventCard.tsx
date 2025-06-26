@@ -3,15 +3,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Location } from "../../Interfaces/types";
+import { formatPriceFromCents } from "../../utils/priceUtils";
 
 interface EventCardProps {
   id: string;
   title: string;
   date: string;
   time: string;
+  endTime?: string;
   location: Location;
   images: string[];
   description: string;
+  price?: number;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
@@ -19,9 +22,11 @@ const EventCard: React.FC<EventCardProps> = ({
   title,
   date,
   time,
+  endTime,
   location,
   images,
-  description
+  description,
+  price
 }) => {
   return (
     <div className="p-3 bg-white shadow-md rounded-lg cursor-pointer">
@@ -64,7 +69,10 @@ const EventCard: React.FC<EventCardProps> = ({
           alt="Time icon"
           className="w-4 h-4 mr-2"
         />
-        <span>{time}</span>
+        <span>
+          {time}
+          {endTime && endTime !== "Non défini" && ` - ${endTime}`}
+        </span>
       </div>
 
       {/* Location */}
@@ -82,8 +90,30 @@ const EventCard: React.FC<EventCardProps> = ({
         </span>
       </div>
 
+      {/* Price */}
+      {price && price > 0 && (
+        <div className="text-gray-600 mb-4 flex items-center">
+          <img
+            src="/images/icons/euro.svg"
+            alt="Price icon"
+            className="w-4 h-4 mr-2"
+          />
+          <span>{formatPriceFromCents(price)}</span>
+        </div>
+      )}
+
       {/* Description */}
       <p className="mb-4 font-Montserrat">{description}</p>
+
+      {/* Price */}
+      {price !== undefined && price > 0 && (
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-lg font-bold text-green-600">
+            💰 {formatPriceFromCents(price)}
+          </span>
+          <span className="text-sm text-gray-500">par personne</span>
+        </div>
+      )}
 
       {/* View More Button */}
       <Link to={`/event/evenements/${id}`}>
