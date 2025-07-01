@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { getEventById } from "../../Services/eventService";
+import { getEventById, clearEventCache } from "../../Services/eventService";
 import { bookEvent, cancelBooking, getBookingStatus } from "../../Services/bookingService";
 import EventMap from "../Maps/EventMap";
 import SEOHead from "../SEO/SEOHead";
@@ -39,6 +39,12 @@ const EventDetails: React.FC = () => {
   
   // État pour le formulaire de réservation
   const [bookingForm, setBookingForm] = useState({
+    first_name: "",
+    last_name: "",
+    username: "",
+    association: "",
+    role: "",
+    carpooling: false,
     team_preference: "",
     special_requirements: "",
     emergency_contact: {
@@ -59,8 +65,17 @@ const EventDetails: React.FC = () => {
       }
 
       try {
-        const response = await getEventById(eventId);
+        // Vider le cache avant de récupérer l'événement
+        clearEventCache();
+        
+        // Forcer le rafraîchissement pour éviter le cache
+        const response = await getEventById(eventId, true);
         const eventData = response.event || response;
+        
+        // Log pour débugger l'ID de l'événement récupéré
+        console.log("🔍 Event ID demandé:", eventId);
+        console.log("🔍 Event ID reçu:", eventData.id);
+        console.log("🔍 Adresse reçue:", eventData.location?.address);
  
         // Adaptation des données pour correspondre à la structure backend
         const adaptedEvent: DetailedEvent = {
@@ -164,6 +179,12 @@ const EventDetails: React.FC = () => {
       const bookingData: BookingRequest = {
         event_id: id,
         user_id: user.pseudonyme,
+        first_name: bookingForm.first_name,
+        last_name: bookingForm.last_name,
+        username: bookingForm.username,
+        association: bookingForm.association || undefined,
+        role: bookingForm.role || undefined,
+        carpooling: bookingForm.carpooling,
         team_preference: bookingForm.team_preference || undefined,
         special_requirements: bookingForm.special_requirements || undefined,
         emergency_contact: bookingForm.emergency_contact.name ? bookingForm.emergency_contact : undefined

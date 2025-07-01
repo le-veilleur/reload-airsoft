@@ -1,7 +1,7 @@
 // src/Components/EventCard.tsx
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Location } from "../../Interfaces/types";
 import { formatPriceFromCents } from "../../utils/priceUtils";
 
@@ -28,8 +28,15 @@ const EventCard: React.FC<EventCardProps> = ({
   description,
   price
 }) => {
+  const navigate = useNavigate();
+
+  const handleViewMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Empêcher la propagation vers le div parent
+    navigate(`/event/evenements/${id}`);
+  };
+
   return (
-    <div className="p-3 bg-white shadow-md rounded-lg cursor-pointer">
+    <div className="p-3 bg-white shadow-md rounded-lg">
       {/* Images  Affichage de la première image si disponible*/}
       {images && Array.isArray(images) && images.length > 0 ? (
         <img
@@ -90,20 +97,34 @@ const EventCard: React.FC<EventCardProps> = ({
         </span>
       </div>
 
-      {/* Price */}
-      {price && price > 0 && (
-        <div className="text-gray-600 mb-4 flex items-center">
-          <img
-            src="/images/icons/euro.svg"
-            alt="Price icon"
-            className="w-4 h-4 mr-2"
-          />
-          <span>{formatPriceFromCents(price)}</span>
-        </div>
-      )}
-
       {/* Description */}
-      <p className="mb-4 font-Montserrat">{description}</p>
+      <div className="mb-4">
+        <div className="relative">
+          <p className="text-gray-700 font-Montserrat leading-relaxed text-sm">
+            {description && description.length > 120 ? (
+              <>
+                <span>{description.substring(0, 120)}</span>
+                <span className="text-gray-500">...</span>
+                <br />
+                <span className="text-blue-600 text-xs font-medium cursor-pointer hover:text-blue-800 transition-colors">
+                  📖 Voir plus dans les détails
+                </span>
+              </>
+            ) : (
+              description || "Aucune description disponible"
+            )}
+          </p>
+          {/* Indicateur visuel si description vide */}
+          {!description && (
+            <div className="flex items-center text-gray-400 text-xs mt-1">
+              <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              Description à venir
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Price */}
       {price !== undefined && price > 0 && (
@@ -116,11 +137,12 @@ const EventCard: React.FC<EventCardProps> = ({
       )}
 
       {/* View More Button */}
-      <Link to={`/event/evenements/${id}`}>
-        <button className="bg-blue-800 text-white py-2 px-4 rounded-full font-Montserrat">
-          Voir plus
-        </button>
-      </Link>
+      <button 
+        onClick={handleViewMoreClick}
+        className="bg-blue-800 text-white py-2 px-4 rounded-full font-Montserrat hover:bg-blue-900 transition-colors"
+      >
+        Voir plus
+      </button>
     </div>
   );
 };

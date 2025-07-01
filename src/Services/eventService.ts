@@ -30,9 +30,10 @@ api.interceptors.request.use(
 );
 
 // Fonction pour obtenir tous les événements
-export const getAllEvents = async () => {
+export const getAllEvents = async (forceRefresh: boolean = false) => {
   try {
-    const response = await api.get("events");
+    const url = forceRefresh ? `events?refresh=${Date.now()}` : "events";
+    const response = await api.get(url);
     console.log("Réponse des événements : ", response.data);
     return response.data;
   } catch (error) {
@@ -41,9 +42,10 @@ export const getAllEvents = async () => {
 };
 
 // Fonction pour obtenir un événement spécifique par ID
-export const getEventById = async (id: string) => {
+export const getEventById = async (id: string, forceRefresh: boolean = false) => {
   try {
-    const response = await api.get(`events/${id}`);
+    const url = forceRefresh ? `events/${id}?refresh=${Date.now()}` : `events/${id}`;
+    const response = await api.get(url);
     console.log("Réponse des événements getEventById : ", response.data);
     return response.data;
   } catch (error) {
@@ -68,6 +70,19 @@ export const createEvent = async (eventData: FormData) => {
 // Fonction pour créer un nouvel événement avec JSON
 export const createEventWithJson = async (eventData: CreateEventData): Promise<CreateEventResponse> => {
   try {
+    // Si on veut forcer la création de nouvelles coordonnées, ajouter un identifiant unique
+    if (eventData.location && eventData.location.address) {
+      // Vérifier si l'adresse semble déjà unique (contient un timestamp ou ID)
+      const hasUniqueIdentifier = /\d{13}|\([a-f0-9-]{36}\)|\s#\d+$/.test(eventData.location.address);
+      
+      if (!hasUniqueIdentifier) {
+        // Ajouter un identifiant unique discret à l'adresse
+        const uniqueId = Date.now();
+        eventData.location.address = `${eventData.location.address} #${uniqueId}`;
+        console.log("🔧 Adresse rendue unique:", eventData.location.address);
+      }
+    }
+    
     const response = await api.post("events", eventData);
     console.log("Événement créé avec succès :", response.data);
     return response.data;
@@ -77,7 +92,19 @@ export const createEventWithJson = async (eventData: CreateEventData): Promise<C
   }
 };
 
-// Fonction pour mettre à jour un événement spécifique par ID
+// Fonction pour mettre à jour un événement spécifique par ID (JSON)
+export const updateEventWithJson = async (id: string, eventData: any) => {
+  try {
+    const response = await api.put(`events/${id}`, eventData);
+    console.log("Événement mis à jour avec succès :", response.data);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, "mise à jour de l'événement");
+    throw error;
+  }
+};
+
+// Fonction pour mettre à jour un événement spécifique par ID (FormData - ancienne version)
 export const updateEvent = async (id: string, eventData: FormData) => {
   try {
     const response = await api.put(`/event/evenements/${id}`, eventData, {
@@ -99,6 +126,24 @@ export const deleteEvent = async (id: string) => {
   } catch (error) {
     handleAxiosError(error, "suppression de l'événement");
   }
+};
+
+// Fonction pour forcer le rafraîchissement du cache
+export const clearEventCache = () => {
+  // Ajouter un timestamp pour forcer le rafraîchissement
+  const timestamp = Date.now();
+  
+  // Invalider le cache en modifiant les requêtes futures
+  api.defaults.params = { ...api.defaults.params, _cache_bust: timestamp };
+  
+  // Nettoyer après 1 seconde pour éviter d'encombrer les requêtes futures
+  setTimeout(() => {
+    if (api.defaults.params && api.defaults.params._cache_bust) {
+      delete api.defaults.params._cache_bust;
+    }
+  }, 1000);
+  
+  console.log("🔄 Cache des événements vidé, timestamp:", timestamp);
 };
 
 // Fonction de gestion des erreurs Axios

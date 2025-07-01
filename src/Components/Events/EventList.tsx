@@ -57,7 +57,7 @@ const EventList: React.FC = () => {
               city: event.location?.city || "",
               country: event.location?.country || ""
             }}
-            images={[]} // Pas d'images dans la structure actuelle
+            images={(event as any).image_urls || []} // Utilisation des vraies URLs d'images
             description={event.description}
             price={typeof event.price === 'string' ? parseInt(event.price) || 0 : event.price}
           />

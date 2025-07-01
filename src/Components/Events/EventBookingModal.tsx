@@ -6,6 +6,12 @@ interface EventBookingModalProps {
   showBookingForm: boolean;
   isBooking: boolean;
   bookingForm: {
+    first_name: string;
+    last_name: string;
+    username: string;
+    association: string;
+    role: string;
+    carpooling: boolean;
     team_preference: string;
     special_requirements: string;
     emergency_contact: {
@@ -31,8 +37,14 @@ const EventBookingModal: React.FC<EventBookingModalProps> = ({
   if (!showBookingForm) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-gray-900">
@@ -47,6 +59,93 @@ const EventBookingModal: React.FC<EventBookingModalProps> = ({
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
+            {/* Informations personnelles */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Prénom <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={bookingForm.first_name}
+                  onChange={(e) => onFormChange({ first_name: e.target.value })}
+                  required
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Votre prénom"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={bookingForm.last_name}
+                  onChange={(e) => onFormChange({ last_name: e.target.value })}
+                  required
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Votre nom"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Pseudo <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={bookingForm.username}
+                onChange={(e) => onFormChange({ username: e.target.value })}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Votre pseudo"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Association
+                </label>
+                <input
+                  type="text"
+                  value={bookingForm.association}
+                  onChange={(e) => onFormChange({ association: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Nom de votre association (optionnel)"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Rôle
+                </label>
+                <input
+                  type="text"
+                  value={bookingForm.role}
+                  onChange={(e) => onFormChange({ role: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Votre rôle (optionnel)"
+                />
+              </div>
+            </div>
+
+            {/* Covoiturage */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="carpooling"
+                checked={bookingForm.carpooling}
+                onChange={(e) => onFormChange({ carpooling: e.target.checked })}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="carpooling" className="ml-2 block text-sm text-gray-700">
+                🚗 J'aimerais organiser/participer à un covoiturage
+              </label>
+            </div>
+
             {/* Préférence d'équipe */}
             {event.teams && event.teams.length > 0 && (
               <div>

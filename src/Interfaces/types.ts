@@ -297,6 +297,14 @@ export interface DetailedEvent {
 export interface BookingRequest {
   event_id: string;
   user_id: string;
+  // Informations personnelles
+  first_name: string;
+  last_name: string;
+  username: string;
+  association?: string; // Optionnel
+  role?: string; // Optionnel
+  // Logistique
+  carpooling: boolean;
   team_preference?: string;
   special_requirements?: string;
   emergency_contact?: {
