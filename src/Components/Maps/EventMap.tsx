@@ -128,7 +128,7 @@ const EventMap: React.FC<EventMapProps> = ({
 
   return (
     <div style={{ height, width: "100%" }}>
-      <MapContainer
+           <MapContainer
         center={mapCenter}
         zoom={centerZoom || zoom}
         style={{ height: "100%", width: "100%" }}
@@ -141,7 +141,6 @@ const EventMap: React.FC<EventMapProps> = ({
         zoomControl={true}
         minZoom={2}
         maxZoom={18}
-        tap={true}
         tapTolerance={15}
         bounceAtZoomLimits={false}
         fadeAnimation={false}
