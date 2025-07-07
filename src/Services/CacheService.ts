@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { clearEventCache } from "./eventService";
+import { JWT_CONFIG, DEBUG_CONFIG } from "../config/api.config";
 
 /**
  * Service centralisé pour la gestion du cache de l'application
@@ -9,7 +10,9 @@ class CacheService {
    * Vide le cache des événements
    */
   static clearEventsCache(): void {
-    console.log("🗑️ Vidage du cache des événements...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage du cache des événements...");
+    }
     clearEventCache();
   }
 
@@ -17,10 +20,12 @@ class CacheService {
    * Vide tous les cookies de l'application
    */
   static clearCookies(): void {
-    console.log("🗑️ Vidage des cookies...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage des cookies...");
+    }
     
     // Supprimer le cookie JWT principal
-    Cookies.remove("JWT-Reload-airsoft");
+    Cookies.remove(JWT_CONFIG.COOKIE_NAME);
     
     // Supprimer tous les autres cookies (si il y en a)
     const allCookies = Cookies.get();
@@ -31,19 +36,27 @@ class CacheService {
       Cookies.remove(cookieName, { domain: window.location.hostname });
     });
     
-    console.log("✅ Cookies supprimés");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Cookies supprimés");
+    }
   }
 
   /**
    * Vide le localStorage du navigateur
    */
   static clearLocalStorage(): void {
-    console.log("🗑️ Vidage du localStorage...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage du localStorage...");
+    }
+    
     try {
       localStorage.clear();
-      console.log("✅ localStorage vidé");
+      
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("localStorage vidé");
+      }
     } catch (error) {
-      console.warn("⚠️ Impossible de vider le localStorage:", error);
+      console.warn("Impossible de vider le localStorage:", error);
     }
   }
 
@@ -51,12 +64,18 @@ class CacheService {
    * Vide le sessionStorage du navigateur
    */
   static clearSessionStorage(): void {
-    console.log("🗑️ Vidage du sessionStorage...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage du sessionStorage...");
+    }
+    
     try {
       sessionStorage.clear();
-      console.log("✅ sessionStorage vidé");
+      
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("sessionStorage vidé");
+      }
     } catch (error) {
-      console.warn("⚠️ Impossible de vider le sessionStorage:", error);
+      console.warn("Impossible de vider le sessionStorage:", error);
     }
   }
 
@@ -64,7 +83,9 @@ class CacheService {
    * Vide le cache du navigateur (Service Worker, Cache API)
    */
   static async clearBrowserCache(): Promise<void> {
-    console.log("🗑️ Vidage du cache du navigateur...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage du cache du navigateur...");
+    }
     
     try {
       // Vider le cache des Service Workers si disponible
@@ -83,9 +104,11 @@ class CacheService {
         );
       }
       
-      console.log("✅ Cache du navigateur vidé");
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("Cache du navigateur vidé");
+      }
     } catch (error) {
-      console.warn("⚠️ Impossible de vider complètement le cache du navigateur:", error);
+      console.warn("Impossible de vider complètement le cache du navigateur:", error);
     }
   }
 
@@ -93,7 +116,10 @@ class CacheService {
    * Force le rechargement de la page sans cache
    */
   static hardReload(): void {
-    console.log("🔄 Rechargement forcé de la page...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Rechargement forcé de la page...");
+    }
+    
     // Rechargement en ignorant le cache
     window.location.reload();
   }
@@ -102,7 +128,9 @@ class CacheService {
    * FONCTION PRINCIPALE : Vide TOUS les types de cache
    */
   static async clearAllCache(): Promise<void> {
-    console.log("🧹 === VIDAGE COMPLET DU CACHE ===");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("=== VIDAGE COMPLET DU CACHE ===");
+    }
     
     try {
       // 1. Vider le cache des événements
@@ -118,11 +146,13 @@ class CacheService {
       // 4. Vider le cache du navigateur
       await this.clearBrowserCache();
       
-      console.log("✅ === CACHE COMPLÈTEMENT VIDÉ ===");
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("=== CACHE COMPLÈTEMENT VIDÉ ===");
+      }
       
       // 5. Proposition de rechargement
       const shouldReload = window.confirm(
-        "Cache vidé avec succès ! 🎉\n\nVoulez-vous recharger la page pour appliquer les changements ?"
+        "Cache vidé avec succès !\n\nVoulez-vous recharger la page pour appliquer les changements ?"
       );
       
       if (shouldReload) {
@@ -130,7 +160,7 @@ class CacheService {
       }
       
     } catch (error) {
-      console.error("❌ Erreur lors du vidage du cache:", error);
+      console.error("Erreur lors du vidage du cache:", error);
       throw error;
     }
   }
@@ -139,14 +169,18 @@ class CacheService {
    * Vide seulement le cache applicatif (sans toucher au navigateur)
    */
   static clearAppCache(): void {
-    console.log("🧹 Vidage du cache applicatif...");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage du cache applicatif...");
+    }
     
     this.clearEventsCache();
     this.clearCookies();
     this.clearLocalStorage();
     this.clearSessionStorage();
     
-    console.log("✅ Cache applicatif vidé");
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Cache applicatif vidé");
+    }
   }
 
   /**
@@ -174,11 +208,60 @@ class CacheService {
       console.warn("Impossible d'accéder au sessionStorage");
     }
     
-    return {
+    const info = {
       cookies: cookiesCount,
       localStorage: localStorageCount,
       sessionStorage: sessionStorageCount
     };
+    
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Informations du cache:", info);
+    }
+    
+    return info;
+  }
+
+  /**
+   * Vide le cache de manière sélective selon les options
+   */
+  static clearSelective(options: {
+    events?: boolean;
+    cookies?: boolean;
+    localStorage?: boolean;
+    sessionStorage?: boolean;
+    browserCache?: boolean;
+  }): Promise<void> {
+    if (DEBUG_CONFIG.ENABLED) {
+      console.log("Vidage sélectif du cache:", options);
+    }
+    
+    const promises: Promise<void>[] = [];
+    
+    if (options.events) {
+      this.clearEventsCache();
+    }
+    
+    if (options.cookies) {
+      this.clearCookies();
+    }
+    
+    if (options.localStorage) {
+      this.clearLocalStorage();
+    }
+    
+    if (options.sessionStorage) {
+      this.clearSessionStorage();
+    }
+    
+    if (options.browserCache) {
+      promises.push(this.clearBrowserCache());
+    }
+    
+    return Promise.all(promises).then(() => {
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("Vidage sélectif terminé");
+      }
+    });
   }
 }
 

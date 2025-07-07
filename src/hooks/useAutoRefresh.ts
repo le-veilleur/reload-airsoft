@@ -6,6 +6,7 @@ interface UseAutoRefreshOptions {
   onRefresh: () => Promise<void> | void;
   onlyWhenVisible?: boolean;
   pauseOnError?: boolean;
+  cooldownTime?: number; // Temps minimum entre deux rafraîchissements (en ms)
 }
 
 export const useAutoRefresh = ({
@@ -13,38 +14,55 @@ export const useAutoRefresh = ({
   interval = 120000, // 2 minutes par défaut
   onRefresh,
   onlyWhenVisible = true,
-  pauseOnError = true
+  pauseOnError = true,
+  cooldownTime = 5000 // 5 secondes de cooldown par défaut
 }: UseAutoRefreshOptions) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const errorCountRef = useRef(0);
+  const lastRefreshRef = useRef<number>(0);
+  const visibilityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const maxErrors = 3;
 
   // Gérer la visibilité de la page
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(!document.hidden);
 
   useEffect(() => {
     if (!onlyWhenVisible) return;
 
     const handleVisibilityChange = () => {
-      setIsVisible(!document.hidden);
+      const newVisibility = !document.hidden;
+      
+      // Debouncing pour éviter les changements trop rapides
+      if (visibilityTimeoutRef.current) {
+        clearTimeout(visibilityTimeoutRef.current);
+      }
+      
+      visibilityTimeoutRef.current = setTimeout(() => {
+        setIsVisible(newVisibility);
+      }, 100); // Attendre 100ms avant de changer l'état
     };
 
-    const handleFocus = () => setIsVisible(true);
-    const handleBlur = () => setIsVisible(false);
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
+      if (visibilityTimeoutRef.current) {
+        clearTimeout(visibilityTimeoutRef.current);
+      }
     };
   }, [onlyWhenVisible]);
 
   const executeRefresh = useCallback(async () => {
+    const now = Date.now();
+    
+    // Vérifier le cooldown pour éviter les rafraîchissements trop fréquents
+    if (now - lastRefreshRef.current < cooldownTime) {
+      console.log(`⏳ Rafraîchissement ignoré (cooldown: ${Math.ceil((cooldownTime - (now - lastRefreshRef.current)) / 1000)}s restantes)`);
+      return;
+    }
+
     try {
+      lastRefreshRef.current = now;
       await onRefresh();
       errorCountRef.current = 0; // Reset compteur d'erreurs en cas de succès
     } catch (error) {
@@ -60,7 +78,7 @@ export const useAutoRefresh = ({
         }
       }
     }
-  }, [onRefresh, pauseOnError]);
+  }, [onRefresh, pauseOnError, cooldownTime]);
 
   const startInterval = useCallback(() => {
     if (intervalRef.current) {
@@ -92,6 +110,7 @@ export const useAutoRefresh = ({
 
   const resetErrors = useCallback(() => {
     errorCountRef.current = 0;
+    lastRefreshRef.current = 0; // Reset aussi le cooldown
     if (enabled && !intervalRef.current) {
       startInterval();
     }
@@ -108,13 +127,19 @@ export const useAutoRefresh = ({
     return stopInterval;
   }, [enabled, isVisible, startInterval, stopInterval]);
 
-  // Rafraîchissement immédiat quand la page redevient visible
+  // Rafraîchissement avec cooldown quand la page redevient visible
   useEffect(() => {
     if (isVisible && enabled && onlyWhenVisible) {
-      console.log('👀 Page redevenue visible, rafraîchissement immédiat');
-      executeRefresh();
+      const timeSinceLastRefresh = Date.now() - lastRefreshRef.current;
+      
+      if (timeSinceLastRefresh >= cooldownTime) {
+        console.log('👀 Page redevenue visible, rafraîchissement avec cooldown');
+        executeRefresh();
+      } else {
+        console.log(`👀 Page redevenue visible, mais cooldown actif (${Math.ceil((cooldownTime - timeSinceLastRefresh) / 1000)}s restantes)`);
+      }
     }
-  }, [isVisible, enabled, onlyWhenVisible, executeRefresh]);
+  }, [isVisible, enabled, onlyWhenVisible, executeRefresh, cooldownTime]);
 
   return {
     isActive: !!intervalRef.current,

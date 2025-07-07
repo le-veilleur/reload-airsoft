@@ -3,20 +3,20 @@ import { useAuth } from "../Contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export interface RegisterFormProps {
-  first_name: string;
-  last_name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
-  username: string;
+  pseudonyme: string;
 }
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<RegisterFormProps>({
-    first_name: "",
-    last_name: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
-    username: ""
+    pseudonyme: ""
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -49,17 +49,17 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateName(formData.first_name)) {
+    if (!validateName(formData.firstname)) {
       setError("Le prénom ne peut pas être vide.");
       return;
     }
 
-    if (!validateName(formData.last_name)) {
+    if (!validateName(formData.lastname)) {
       setError("Le nom de famille ne peut pas être vide.");
       return;
     }
 
-    if (!validateUsername(formData.username)) {
+    if (!validateUsername(formData.pseudonyme)) {
       setError("Le pseudo ne peut pas être vide.");
       return;
     }
@@ -98,16 +98,16 @@ const Register: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="username"
+              htmlFor="pseudonyme"
               className="block text-sm font-medium text-gray-700"
             >
               Pseudo:
             </label>
             <input
               type="text"
-              name="username"
-              id="username"
-              value={formData.username}
+              name="pseudonyme"
+              id="pseudonyme"
+              value={formData.pseudonyme}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -115,16 +115,16 @@ const Register: React.FC = () => {
           </div>
           <div>
             <label
-              htmlFor="first_name"
+              htmlFor="firstname"
               className="block text-sm font-medium text-gray-700"
             >
               Prénom:
             </label>
             <input
               type="text"
-              name="first_name"
-              id="first_name"
-              value={formData.first_name}
+              name="firstname"
+              id="firstname"
+              value={formData.firstname}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -132,16 +132,16 @@ const Register: React.FC = () => {
           </div>
           <div>
             <label
-              htmlFor="last_name"
+              htmlFor="lastname"
               className="block text-sm font-medium text-gray-700"
             >
               Nom de famille:
             </label>
             <input
               type="text"
-              name="last_name"
-              id="last_name"
-              value={formData.last_name}
+              name="lastname"
+              id="lastname"
+              value={formData.lastname}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

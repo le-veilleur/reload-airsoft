@@ -9,6 +9,7 @@ import Login from "../auth/Login";
 import Register from "../auth/Register";
 import ForgotPassword from "../auth/ForgotPassword";
 import EventDetailPage from "../Pages/events/EventDetailPage";
+import CreateEventPage from "../Pages/events/CreateEventPage";
 import Profile from "../user/Profile/ProfileOverview";
 import PrivateRoute from "../Router/PrivateRoute";
 import EventsPage from "../Pages/events/Events";
@@ -40,16 +41,11 @@ const AppRoutes: React.FC = () => {
                   <Route element={<PrivateRoute />}>
                     <Route
                       path="/profile"
-                      element={
-                        <Profile
-                    FirstName={user?.firstname || ""}
-                    LastName={user?.lastname || ""}
-                          email={user?.email || ""}
-                    avatarUrl={user?.profile_picture_url || null}
-                    username={user?.pseudonyme || ""}
-                                          teams={user?.role ? [user.role] : []}
-                        />
-                      }
+                      element={<Profile />}
+                    />
+                    <Route
+                      path="/events/create"
+                      element={<CreateEventPage />}
                     />
                     {/* Ajoutez d'autres routes protégées ici */}
                   </Route>

@@ -1,3 +1,12 @@
+/* Z-index pour la carte - doit être inférieur aux menus et modals */
+.leaflet-container {
+  z-index: 10 !important;
+}
+
+.leaflet-control-container {
+  z-index: 11 !important;
+}
+
 /* Styles pour les popups de carte optimisés et améliorés */
 .leaflet-popup-content-wrapper {
   border-radius: 12px;
@@ -166,6 +175,11 @@
   .leaflet-popup-content button:before {
     display: none;
   }
+}
+
+/* Z-index pour les popups - doit être supérieur à la carte mais inférieur aux menus */
+.leaflet-popup {
+  z-index: 20 !important;
 }
 
 /* Popup personnalisée plus réactive */

@@ -41,24 +41,38 @@ export interface LoginData {
   }
   
   export interface RegisterData {
-  first_name: string;
-  last_name: string;
-  username: string;
+  firstname: string;
+  lastname: string;
+  pseudonyme: string;
   email: string;
   password: string;
   phone_number?: string;
+  bio?: string;
+  location?: string;
   terms_accepted_at?: string;
   privacy_accepted_at?: string;
   marketing_consent?: boolean;
+}
+
+export interface CompleteRegisterData {
+  firstname: string;
+  lastname: string;
+  pseudonyme: string;
+  email: string;
+  password: string;
+  phone_number: string;
+  bio: string;
+  location: string;
+  marketing_consent: boolean;
 }
 
 export interface AuthResponse {
   ID: number;
   updatedAt: string;
   deletedAt: string | null;
-  last_name: string;
-  first_name: string;
-  username: string;
+  lastname: string;
+  firstname: string;
+  pseudonyme: string;
   email: string;
   roles: string[];
   createdAt: string;
@@ -298,9 +312,9 @@ export interface BookingRequest {
   event_id: string;
   user_id: string;
   // Informations personnelles
-  first_name: string;
-  last_name: string;
-  username: string;
+  firstname: string;
+  lastname: string;
+  pseudonyme: string;
   association?: string; // Optionnel
   role?: string; // Optionnel
   // Logistique

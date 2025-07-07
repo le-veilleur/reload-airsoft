@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LoginData } from "../Interfaces/types";
 
 const Login: React.FC = () => {
@@ -13,6 +13,12 @@ const Login: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Récupérer le message et la redirection depuis l'état de navigation
+  const state = location.state as { message?: string; redirectTo?: string } | null;
+  const redirectTo = state?.redirectTo || "/";
+  const message = state?.message;
 
   // Gestion des changements dans les champs du formulaire
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,10 +60,31 @@ const Login: React.FC = () => {
       await login(formData);
       setSuccess("Connexion réussie !");
       console.log("Login Successful");
-      navigate("/");
-    } catch (err) {
+      navigate(redirectTo);
+    } catch (err: any) {
       console.error("Login Error:", err);
-      setError("Échec de la connexion. Veuillez vérifier vos informations.");
+      
+      // Afficher un message d'erreur plus spécifique selon le type d'erreur
+      let errorMessage = "Échec de la connexion. Veuillez vérifier vos informations.";
+      
+      if (err?.message) {
+        // Si c'est notre erreur custom du AuthContext
+        if (err.message.includes("Token d'accès manquant")) {
+          errorMessage = "Erreur serveur : token d'accès manquant. Contactez l'administrateur.";
+        } else if (err.message.includes("Données utilisateur incomplètes")) {
+          errorMessage = "Erreur serveur : données utilisateur incomplètes. Contactez l'administrateur.";
+        } else if (err.message.includes("401") || err.message.includes("Unauthorized")) {
+          errorMessage = "Email ou mot de passe incorrect.";
+        } else if (err.message.includes("429")) {
+          errorMessage = "Trop de tentatives de connexion. Veuillez patienter.";
+        } else if (err.message.includes("500")) {
+          errorMessage = "Erreur serveur temporaire. Veuillez réessayer dans quelques instants.";
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
     }
   };
 
@@ -65,6 +92,7 @@ const Login: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-center">Connexion</h2>
+        {message && <p className="text-blue-600 mb-4 text-center">{message}</p>}
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {success && <p className="text-green-500 mb-4">{success}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">

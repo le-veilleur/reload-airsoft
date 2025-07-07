@@ -6,9 +6,9 @@ interface EventBookingModalProps {
   showBookingForm: boolean;
   isBooking: boolean;
   bookingForm: {
-    first_name: string;
-    last_name: string;
-    username: string;
+    firstname: string;
+      lastname: string;
+    pseudonyme: string;
     association: string;
     role: string;
     carpooling: boolean;
@@ -67,8 +67,8 @@ const EventBookingModal: React.FC<EventBookingModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={bookingForm.first_name}
-                  onChange={(e) => onFormChange({ first_name: e.target.value })}
+                  value={bookingForm.firstname}
+                  onChange={(e) => onFormChange({ firstname: e.target.value })}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Votre prénom"
@@ -81,8 +81,8 @@ const EventBookingModal: React.FC<EventBookingModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={bookingForm.last_name}
-                  onChange={(e) => onFormChange({ last_name: e.target.value })}
+                  value={bookingForm.lastname}
+                  onChange={(e) => onFormChange({ lastname: e.target.value })}
                   required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Votre nom"
@@ -96,8 +96,8 @@ const EventBookingModal: React.FC<EventBookingModalProps> = ({
               </label>
               <input
                 type="text"
-                value={bookingForm.username}
-                onChange={(e) => onFormChange({ username: e.target.value })}
+                  value={bookingForm.pseudonyme}
+                onChange={(e) => onFormChange({ pseudonyme: e.target.value })}
                 required
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Votre pseudo"

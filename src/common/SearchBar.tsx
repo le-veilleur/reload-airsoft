@@ -21,45 +21,41 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="flex justify-center pt-4 px-4 sm:px-6 lg:px-8">
-      <div className="p-4 shadow-xl rounded-full border w-full max-w-4xl bg-white">
+    <div className="w-full">
+      <div className="p-2 shadow-sm rounded-md border bg-white">
         <form
           onSubmit={handleSearch}
-          className="flex flex-col sm:flex-row items-center gap-4"
+          className="flex flex-col gap-2"
         >
-          <div className="flex-1 w-full">
-            <input
-              type="date"
-              id="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              placeholder="Date"
-              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
-            />
-          </div>
-          <div className="flex-1 w-full">
-            <input
-              type="time"
-              id="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              placeholder="Heure"
-              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
-            />
-          </div>
-          <div className="flex-1 w-full">
+          <div className="w-full">
             <input
               type="text"
               id="location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Lieu"
-              className="block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2"
+              placeholder="Ville, région, département..."
+              className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-1">
+            <input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+            />
+            <input
+              type="time"
+              id="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
             />
           </div>
           <button
             type="submit"
-            className="w-full sm:w-auto px-4 py-2 bg-indigo-900 text-white font-semibold rounded-full shadow-md focus:outline-none focus:ring-2"
+            className="w-full px-3 py-1.5 bg-blue-600 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs hover:bg-blue-700 transition-colors"
           >
             Rechercher
           </button>

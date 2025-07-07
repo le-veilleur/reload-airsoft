@@ -4,9 +4,29 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Scroll fluide global */
-html {
+/* Désactiver le scroll de la page par défaut */
+html, body {
   scroll-behavior: smooth;
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Permettre le scroll uniquement sur la page de création d'événements */
+body.allow-scroll {
+  overflow: auto;
+}
+
+body.allow-scroll #root {
+  overflow: auto;
+  height: auto;
+  min-height: 100vh;
 }
 
 /* Amélioration de la scrollbar */

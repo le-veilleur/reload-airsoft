@@ -1,7 +1,7 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
-  // Proxy pour les événements (port 8080)
+  // Proxy pour toutes les API (via API Gateway sur port 8080)
   app.use(
     '/api/v1',
     createProxyMiddleware({

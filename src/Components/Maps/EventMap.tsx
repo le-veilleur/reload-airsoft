@@ -127,7 +127,7 @@ const EventMap: React.FC<EventMapProps> = ({
   }
 
   return (
-    <div style={{ height, width: "100%" }}>
+    <div style={{ height, width: "100%", position: "relative", zIndex: 10 }}>
            <MapContainer
         center={mapCenter}
         zoom={centerZoom || zoom}

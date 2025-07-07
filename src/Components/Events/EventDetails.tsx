@@ -39,9 +39,9 @@ const EventDetails: React.FC = () => {
   
   // État pour le formulaire de réservation
   const [bookingForm, setBookingForm] = useState({
-    first_name: "",
-    last_name: "",
-    username: "",
+    firstname: "",
+    lastname: "",
+    pseudonyme: "",
     association: "",
     role: "",
     carpooling: false,
@@ -179,9 +179,9 @@ const EventDetails: React.FC = () => {
       const bookingData: BookingRequest = {
         event_id: id,
         user_id: user.pseudonyme,
-        first_name: bookingForm.first_name,
-        last_name: bookingForm.last_name,
-        username: bookingForm.username,
+        firstname: bookingForm.firstname,
+        lastname: bookingForm.lastname,
+        pseudonyme: bookingForm.pseudonyme,
         association: bookingForm.association || undefined,
         role: bookingForm.role || undefined,
         carpooling: bookingForm.carpooling,
@@ -667,14 +667,35 @@ const EventDetails: React.FC = () => {
           <EventBookingModal
             event={event}
             showBookingForm={showBookingForm}
-            bookingForm={bookingForm}
+            bookingForm={{
+              firstname: bookingForm.firstname,
+              lastname: bookingForm.lastname,
+              pseudonyme: bookingForm.pseudonyme,
+              association: bookingForm.association,
+              role: bookingForm.role,
+              carpooling: bookingForm.carpooling,
+              team_preference: bookingForm.team_preference,
+              special_requirements: bookingForm.special_requirements,
+              emergency_contact: bookingForm.emergency_contact
+            }}
             isBooking={isBooking}
             onClose={() => setShowBookingForm(false)}
             onSubmit={(e) => {
               e.preventDefault();
               handleBooking();
             }}
-            onFormChange={(updates) => setBookingForm(prev => ({ ...prev, ...updates }))}
+            onFormChange={(updates) => setBookingForm(prev => ({ 
+              ...prev, 
+              firstname: updates.firstname || prev.firstname,
+              lastname: updates.lastname || prev.lastname,
+              pseudonyme: updates.pseudonyme || prev.pseudonyme,
+              association: updates.association || prev.association,
+              role: updates.role || prev.role,
+              carpooling: updates.carpooling ?? prev.carpooling,
+              team_preference: updates.team_preference || prev.team_preference,
+              special_requirements: updates.special_requirements || prev.special_requirements,
+              emergency_contact: updates.emergency_contact || prev.emergency_contact
+            }))}
           />
         )}
        
