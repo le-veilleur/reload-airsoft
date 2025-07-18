@@ -104,10 +104,10 @@ const EventDetails: React.FC = () => {
           teams: eventData.teams || [],
           participants: eventData.participants || [],
           images: eventData.images?.map((img: any) => ({
-            ID: img.ID || img.id,
-            url: img.url,
-            alt_text: img.alt_text,
-            is_primary: img.is_primary || false
+            id: img.id || img.ID,
+            uploadedUrl: img.uploadedUrl || img.url,
+            altText: img.altText || img.alt_text,
+            isPrimary: img.isPrimary || img.is_primary || false
           })) || [],
           stats: {
             confirmed_participants: eventData.participants?.length || 0,
@@ -137,6 +137,8 @@ const EventDetails: React.FC = () => {
           start_date: adaptedEvent.start_date,
           price: adaptedEvent.price || 0,
           images: adaptedEvent.images
+            .filter(img => !!img.uploadedUrl)
+            .map(img => ({ url: img.uploadedUrl! }))
         });
         setSeoMetadata(metadata);
         
@@ -569,10 +571,10 @@ const EventDetails: React.FC = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">📸 Galerie</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {event.images.slice(1).map((image) => (
-                      <div key={image.ID} className="aspect-square overflow-hidden rounded-lg">
+                      <div key={image.id} className="aspect-square overflow-hidden rounded-lg">
                         <img
-                          src={image.url}
-                          alt={image.alt_text || `${event.title} ${image.ID}`}
+                          src={image.uploadedUrl}
+                          alt={image.altText || `${event.title} ${image.id}`}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
                         />
                       </div>

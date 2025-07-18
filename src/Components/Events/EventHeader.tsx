@@ -14,8 +14,8 @@ const EventHeader: React.FC<EventHeaderProps> = ({ event }) => {
       <div className="relative h-96">
         {event.images.length > 0 ? (
           <img
-            src={event.images[0].url}
-            alt={event.images[0].alt_text || event.title}
+            src={event.images[0].uploadedUrl}
+            alt={event.images[0].altText || event.title}
             className="w-full h-full object-cover"
           />
         ) : (

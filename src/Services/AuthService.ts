@@ -101,7 +101,7 @@ const AuthService = {
   registerComplete: async (data: CompleteRegisterData): Promise<AuthResponse> => {
     try {
       // Transformation des données pour correspondre au format attendu par l'API
-      const registerPayload = {
+      const registerPayload: any = {
         firstname: data.firstname,
         lastname: data.lastname,
         pseudonyme: data.pseudonyme,
@@ -115,8 +115,27 @@ const AuthService = {
         privacy_accepted_at: new Date().toISOString()
       };
 
+      // Ajout de l'avatar si présent
+      if (data.avatar_data && data.avatar_filename) {
+        // Conversion base64 -> Buffer (Uint8Array)
+        // Si déjà un buffer, on laisse tel quel
+        let avatarBuffer: Uint8Array | undefined = undefined;
+        if (typeof data.avatar_data === 'string') {
+          // On suppose que c'est du base64
+          avatarBuffer = Uint8Array.from(atob(data.avatar_data), c => c.charCodeAt(0));
+        } else if (ArrayBuffer.isView(data.avatar_data) && Object.prototype.toString.call(data.avatar_data) === '[object Uint8Array]') {
+          // C'est déjà un Uint8Array
+          avatarBuffer = data.avatar_data as Uint8Array;
+        }
+        registerPayload.avatar_data = avatarBuffer;
+        registerPayload.avatar_filename = data.avatar_filename;
+      }
+
       if (DEBUG_CONFIG.ENABLED) {
         console.log("Tentative d'inscription complète pour:", data.email);
+        if (registerPayload.avatar_data) {
+          console.log("Avatar présent (binaire):", registerPayload.avatar_data);
+        }
       }
 
       const response = await api.post(ENDPOINTS.AUTH.REGISTER, registerPayload);

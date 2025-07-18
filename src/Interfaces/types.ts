@@ -52,6 +52,8 @@ export interface LoginData {
   terms_accepted_at?: string;
   privacy_accepted_at?: string;
   marketing_consent?: boolean;
+  avatar_data?: string; // Données de l'avatar en base64
+  avatar_filename?: string; // Nom du fichier avatar
 }
 
 export interface CompleteRegisterData {
@@ -64,6 +66,8 @@ export interface CompleteRegisterData {
   bio: string;
   location: string;
   marketing_consent: boolean;
+  avatar_data?: string; // Données de l'avatar en base64
+  avatar_filename?: string; // Nom du fichier avatar
 }
 
 export interface AuthResponse {
@@ -96,7 +100,7 @@ export interface User {
   verification_token_expires_at?: string | null;
   last_login_at?: string | null;
   reset_token?: string | null;
-  profile_picture_url?: string | null;
+  avatar_url?: string | null;
   preferences: Record<string, any>;
   terms_accepted_at?: string | null;
   privacy_accepted_at?: string | null;
@@ -113,7 +117,7 @@ export interface UserProfile {
   email: string;
   role: string;
   phone_number?: string | null;
-  profile_picture_url?: string | null;
+  avatar_url?: string | null;
   preferences: Record<string, any>;
 }
 
@@ -192,7 +196,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
   status: EventStatus;
-  image_urls: string[];
+  image_urls: string[]; // Liste d'URL d'images (envoyée/reçue du backend)
   category: Category[];
   // Données enrichies
   organizer_name?: string;
@@ -211,11 +215,53 @@ export interface CreateEventData {
   max_participants: number;
   organizer_id: string;
   category_ids: string[];
-  image_urls: string[];
+  image_urls: string[]; // Liste d'URL d'images (envoyée au backend)
   price?: number; // Prix en centimes (ex: 2500 = 25€)
   equipment_required?: string;
   difficulty_level?: DifficultyLevel;
   is_private?: boolean;
+  
+  // Nouveaux champs ajoutés
+  event_type?: string;
+  age_restriction?: number;
+  equipment_required_details?: Array<{
+    name: string;
+    description: string;
+    required: boolean;
+    provided: boolean;
+  }>;
+  pricing_options?: Array<{
+    name: string;
+    price: number;
+    currency: string;
+  }>;
+  rules?: string[];
+  schedule?: Array<{
+    phase: string;
+    start_time: string;
+    end_time: string;
+  }>;
+  cancellation_policy?: {
+    refund_percentage: number;
+    deadline: string;
+  };
+  insurance?: {
+    included: boolean;
+    provider: string;
+  };
+  contacts?: Array<{
+    name: string;
+    email: string;
+    primary: boolean;
+  }>;
+  social_media?: Array<{
+    platform: string;
+    url: string;
+  }>;
+  metadata?: {
+    tags: string[];
+    keywords: string[];
+  };
 }
 
 export interface CreateEventResponse {
@@ -252,11 +298,18 @@ export interface Equipment {
   available_quantity?: number;
 }
 
+// EventImage : utilisé côté front pour la gestion locale et l'UX (upload, preview, etc.)
+// Seul le champ uploadedUrl (URL) est envoyé au backend dans image_urls
 export interface EventImage {
-  ID: number;
-  url: string;
-  alt_text?: string;
-  is_primary?: boolean;
+  id: string; // Identifiant unique (front)
+  file?: File; // Fichier image sélectionné (avant upload)
+  previewUrl?: string; // URL temporaire pour prévisualisation (avant upload)
+  altText?: string; // Texte alternatif pour l'accessibilité (front uniquement)
+  isPrimary?: boolean; // Indique si c'est l'image principale (front uniquement)
+  uploadedUrl?: string; // URL permanente après upload (à placer dans image_urls pour le backend)
+  isUploading?: boolean; // Statut d'upload en cours (front)
+  uploadProgress?: number; // Progression de l'upload (front)
+  error?: string; // Message d'erreur éventuel lors de l'upload (front)
 }
 
 export interface EventStats {
@@ -294,7 +347,7 @@ export interface DetailedEvent {
   categories: Category[];
   teams?: Team[];
   participants: Participant[];
-  images: EventImage[];
+  images: EventImage[]; // Utilisé côté front uniquement pour la gestion locale
   stats: EventStats;
   booking_deadline?: string;
   cancellation_policy?: string;
@@ -385,7 +438,7 @@ export interface UpdateUserData {
   pseudonyme?: string;
   email?: string;
   phone_number?: string;
-  profile_picture_url?: string;
+  avatar_url?: string;
   preferences?: Record<string, any>;
   marketing_consent?: boolean;
 }

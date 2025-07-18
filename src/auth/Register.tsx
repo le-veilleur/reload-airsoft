@@ -8,6 +8,8 @@ export interface RegisterFormProps {
   email: string;
   password: string;
   pseudonyme: string;
+  avatar_data?: string;
+  avatar_filename?: string;
 }
 
 const Register: React.FC = () => {
@@ -16,7 +18,9 @@ const Register: React.FC = () => {
     lastname: "",
     email: "",
     password: "",
-    pseudonyme: ""
+    pseudonyme: "",
+    avatar_data: undefined,
+    avatar_filename: undefined
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -27,6 +31,22 @@ const Register: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Ajout gestion avatar
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          avatar_data: reader.result?.toString().split(",")[1], // base64 sans le préfixe data:image/...
+          avatar_filename: file.name
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const validateEmail = (email: string) => {
@@ -78,11 +98,32 @@ const Register: React.FC = () => {
       setError(null);
       setSuccess(null);
       setLoading(true); // Set loading state
-      await register(formData);
+
+      // LOG AVATAR DEBUG
+      if (formData.avatar_data) {
+        console.log("[DEBUG] Avatar présent dans formData :");
+        console.log("Type avatar_data:", typeof formData.avatar_data);
+        console.log("Taille avatar_data:", formData.avatar_data.length);
+        console.log("Début base64:", formData.avatar_data.substring(0, 40));
+        if (formData.avatar_filename) {
+          console.log("Nom du fichier avatar:", formData.avatar_filename);
+        }
+      } else {
+        console.log("[DEBUG] Aucun avatar dans formData");
+      }
+
+      await register(formData); // formData contient maintenant avatar_data et avatar_filename
       setSuccess("Inscription réussie ! Vous pouvez vous connecter.");
       // Optional: redirect immediately or let the user click a link
       navigate("/login"); // Redirection vers la page de connexion
-    } catch (err) {
+    } catch (err: any) {
+      console.error("[DEBUG] Erreur lors de l'inscription:", err);
+      if (err?.response) {
+        console.error("[DEBUG] Réponse serveur:", err.response);
+        if (err.response.data) {
+          console.error("[DEBUG] Détail erreur serveur:", err.response.data);
+        }
+      }
       setError("Échec de l'inscription. Veuillez vérifier vos informations.");
     } finally {
       setLoading(false); // Reset loading state
@@ -178,6 +219,19 @@ const Register: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="avatar" className="block text-sm font-medium text-gray-700">
+              Avatar (optionnel):
+            </label>
+            <input
+              type="file"
+              name="avatar"
+              id="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

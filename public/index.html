@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Reload Airsoft - Plateforme de gestion d'événements airsoft"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -25,6 +25,86 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Reload Airsoft</title>
+    
+    <!-- Script de debug temporaire -->
+    <script>
+      // Script de debug pour analyser le token JWT
+      function debugJWTToken() {
+        console.log("=== DEBUG TOKEN JWT ===");
+        
+        try {
+          // Récupérer le token depuis les cookies
+          const token = document.cookie.split('; ').find(row => row.startsWith('JWT-Reload-airsoft='))?.split('=')[1];
+          
+          if (!token) {
+            console.log("❌ Aucun token JWT trouvé dans les cookies");
+            return;
+          }
+          
+          console.log("✅ Token JWT trouvé");
+          
+          // Décoder le token
+          const parts = token.split('.');
+          if (parts.length !== 3) {
+            console.log("❌ Format de token invalide");
+            return;
+          }
+          
+          // Décoder le header
+          const header = JSON.parse(atob(parts[0]));
+          console.log("📋 Header:", header);
+          
+          // Décoder le payload
+          const payload = JSON.parse(atob(parts[1]));
+          console.log("📦 Payload complet:", payload);
+          
+          // Analyser les champs importants
+          console.log("🔍 Analyse des champs:");
+          console.log("  - userID/sub:", payload.userID || payload.sub || "❌ Manquant");
+          console.log("  - email:", payload.email || "❌ Manquant");
+          console.log("  - firstname:", payload.firstname || "❌ Manquant");
+          console.log("  - lastname:", payload.lastname || "❌ Manquant");
+          console.log("  - pseudonyme:", payload.pseudonyme || "❌ Manquant");
+          console.log("  - role:", payload.role || "❌ Manquant");
+          console.log("  - roles:", payload.roles || "❌ Manquant");
+          console.log("  - authorities:", payload.authorities || "❌ Manquant");
+          console.log("  - exp (expiration):", payload.exp ? new Date(payload.exp * 1000).toLocaleString() : "❌ Manquant");
+          console.log("  - iat (création):", payload.iat ? new Date(payload.iat * 1000).toLocaleString() : "❌ Manquant");
+          
+          // Vérifier si le token est expiré
+          if (payload.exp) {
+            const now = Math.floor(Date.now() / 1000);
+            const isExpired = now > payload.exp;
+            console.log("⏰ Token expiré:", isExpired ? "❌ OUI" : "✅ NON");
+          }
+          
+          // Simuler la création du profil depuis le token
+          console.log("🔄 Simulation de création du profil depuis le token:");
+          const tokenEmail = payload.email || payload.sub;
+          const emailUsername = tokenEmail?.includes('@') ? tokenEmail.split('@')[0] : null;
+          
+          const simulatedProfile = {
+            firstname: payload.firstname || payload.given_name || payload.name?.split(' ')[0] || "Utilisateur",
+            lastname: payload.lastname || payload.family_name || payload.name?.split(' ').slice(1).join(' ') || "",
+            pseudonyme: payload.pseudonyme || payload.username || payload.preferred_username || emailUsername || "utilisateur",
+            email: tokenEmail || "user@example.com",
+            role: payload.role || payload.roles?.[0] || payload.authorities?.[0] || "player",
+            profile_picture_url: payload.picture || payload.avatar_url || null,
+            phone_number: payload.phone_number || payload.phone || null
+          };
+          
+          console.log("📋 Profil simulé:", simulatedProfile);
+          
+        } catch (error) {
+          console.error("❌ Erreur lors du debug du token:", error);
+        }
+      }
+      
+      // Exposer la fonction globalement
+      window.debugJWTToken = debugJWTToken;
+      
+      console.log("🔧 Script de debug chargé. Exécutez 'debugJWTToken()' dans la console pour analyser le token JWT.");
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

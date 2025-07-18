@@ -4,18 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Désactiver le scroll de la page par défaut */
-html, body {
-  scroll-behavior: smooth;
-  overflow: hidden;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+
 
 #root {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 /* Permettre le scroll uniquement sur la page de création d'événements */
@@ -52,3 +44,4 @@ body.allow-scroll #root {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #f1f1f1;
 }
+

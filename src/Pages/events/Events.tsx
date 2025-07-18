@@ -163,7 +163,7 @@ const EventsPage: React.FC = () => {
     }));
 
   return (
-    <div className="flex h-[calc(100vh-140px)] bg-gris-bleute">
+    <div className="flex h-[calc(100vh-200px)] bg-gris-bleute">
       {/* Widget de cache temporaire pour dev (peut être retiré en production) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed bottom-4 left-4 z-40">
@@ -186,7 +186,7 @@ const EventsPage: React.FC = () => {
       {/* Menu latéral gauche avec recherche et filtres - responsive */}
       <div className="w-64 lg:w-72 flex flex-col border-r border-gray-200 bg-white">
         {/* Header du menu */}
-        <div className="flex-shrink-0 p-3 border-b border-gray-100">
+        <div className="flex-shrink-0 p-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-800 mb-1">
             Recherche & Filtres
           </h2>
@@ -198,19 +198,19 @@ const EventsPage: React.FC = () => {
         </div>
 
         {/* Barre de recherche */}
-        <div className="flex-shrink-0 p-3 border-b border-gray-100">
+        <div className="flex-shrink-0 p-2 border-b border-gray-100">
           <SearchBar onSearch={handleSearch} />
         </div>
 
         {/* Filtres */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-3">
+          <div className="p-2">
             <EventFilters onFiltersChange={handleFiltersChange} onClearFilters={handleClearFilters} />
           </div>
         </div>
 
         {/* Statut du rafraîchissement automatique */}
-        <div className="flex-shrink-0 p-3 border-t border-gray-100">
+        <div className="flex-shrink-0 p-2 border-t border-gray-100">
           <AutoRefreshStatus
             isActive={autoRefresh.isActive}
             lastRefresh={lastRefresh}
@@ -226,7 +226,7 @@ const EventsPage: React.FC = () => {
       {/* Zone principale : Liste des événements */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header de la liste */}
-        <div className="flex-shrink-0 p-3 bg-white border-b border-gray-100">
+        <div className="flex-shrink-0 p-2 bg-white border-b border-gray-100">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-800">
               Événements ({events.length})
@@ -291,7 +291,7 @@ const EventsPage: React.FC = () => {
       </div>
 
       {/* Carte à droite - responsive */}
-      <div className="w-1/2 lg:w-3/5 xl:w-2/3 relative">
+      <div className="w-1/2 lg:w-3/5 xl:w-2/3 relative h-[calc(100vh-200px)]">
         {mapEvents.length > 0 || mapCenter ? (
           <div className="absolute inset-0">
             <EventMap

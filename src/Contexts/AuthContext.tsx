@@ -105,8 +105,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             lastname: response.lastname || "",
             pseudonyme: response.pseudonyme || response.email?.split('@')[0] || "utilisateur",
             email: response.email || data.email,
-            role: (response.roles && response.roles.length > 0) ? response.roles[0] : "player",
-            profile_picture_url: null,
+            role: (response.roles && response.roles.length > 0) ? response.roles[0] : "",
+            avatar_url: null,
             phone_number: null,
             preferences: {
               notifications: true,

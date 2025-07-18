@@ -99,6 +99,49 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   isPrivate: boolean;
+  
+  // Nouveaux champs ajoutés
+  eventType?: string;
+  difficultyLevel?: string;
+  ageRestriction?: number;
+  equipmentRequired?: Array<{
+    name: string;
+    description: string;
+    required: boolean;
+    provided: boolean;
+  }>;
+  pricingOptions?: Array<{
+    name: string;
+    price: number;
+    currency: string;
+  }>;
+  rules?: string[];
+  schedule?: Array<{
+    phase: string;
+    startTime: string;
+    endTime: string;
+  }>;
+  cancellationPolicy?: {
+    refundPercentage: number;
+    deadline: string;
+  };
+  insurance?: {
+    included: boolean;
+    provider: string;
+  };
+  contacts?: Array<{
+    name: string;
+    email: string;
+    primary: boolean;
+  }>;
+  socialMedia?: Array<{
+    platform: string;
+    url: string;
+  }>;
+  metadata?: {
+    tags: string[];
+    keywords: string[];
+  };
 }
 
 export interface CreateEventRequest {
@@ -109,6 +152,8 @@ export interface CreateEventRequest {
     city: string;
     country: string;
     postalCode: string;
+    latitude?: number;
+    longitude?: number;
   };
   startDate: string;
   endDate: string;
@@ -117,6 +162,49 @@ export interface CreateEventRequest {
   categoryIds: string[];
   isPrivate: boolean;
   organizerId: string;
+  
+  // Nouveaux champs ajoutés
+  eventType?: string;
+  difficultyLevel?: string;
+  ageRestriction?: number;
+  equipmentRequired?: Array<{
+    name: string;
+    description: string;
+    required: boolean;
+    provided: boolean;
+  }>;
+  pricingOptions?: Array<{
+    name: string;
+    price: number;
+    currency: string;
+  }>;
+  rules?: string[];
+  schedule?: Array<{
+    phase: string;
+    startTime: string;
+    endTime: string;
+  }>;
+  cancellationPolicy?: {
+    refundPercentage: number;
+    deadline: string;
+  };
+  insurance?: {
+    included: boolean;
+    provider: string;
+  };
+  contacts?: Array<{
+    name: string;
+    email: string;
+    primary: boolean;
+  }>;
+  socialMedia?: Array<{
+    platform: string;
+    url: string;
+  }>;
+  metadata?: {
+    tags: string[];
+    keywords: string[];
+  };
 }
 
 // Configuration de l'API

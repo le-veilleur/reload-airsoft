@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
+import { mapAvatarUrl } from '../Services/userService';
 
 const Navbar: React.FC = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -50,6 +51,42 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const getDashboardPath = (role: string) => {
+    switch (role) {
+      case 'super_admin':
+        return '/dashboard/super-admin';
+      case 'admin':
+        return '/dashboard/admin';
+      case 'moderator':
+        return '/dashboard/moderator';
+      case 'organizer':
+        return '/dashboard/organizer';
+      case 'company':
+        return '/dashboard/company';
+      case 'player':
+      default:
+        return '/dashboard/player';
+    }
+  };
+
+  const getDashboardLabel = (role: string) => {
+    switch (role) {
+      case 'super_admin':
+        return 'Dashboard Super Admin';
+      case 'admin':
+        return 'Dashboard Admin';
+      case 'moderator':
+        return 'Dashboard Modérateur';
+      case 'organizer':
+        return 'Dashboard Organisateur';
+      case 'company':
+        return 'Dashboard Entreprise';
+      case 'player':
+      default:
+        return 'Dashboard Joueur';
+    }
+  };
+
   return (
     <nav className="relative bg-transparent border-none">
       <div className="container mx-auto flex justify-between items-center p-3">
@@ -77,7 +114,7 @@ const Navbar: React.FC = () => {
                 aria-haspopup="true"
               >
                 <img
-                  src={user?.profile_picture_url || "https://cdn.discordapp.com/attachments/1156985446161711165/1296157593051594773/1_lgZkB5FIZEqR6v-h_ZpCNw.png?ex=67114453&is=670ff2d3&hm=c45ab66a8a6a146b8d398feb08cee329dba9ec207d6fd9813482dbe7c8a84f15&"}
+                  src={mapAvatarUrl(user?.avatar_url) || "public/images/default-avatar.png"}
                   alt="Avatar"
                   className="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
                 />
@@ -112,7 +149,7 @@ const Navbar: React.FC = () => {
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center">
                       <img
-                        src={user?.profile_picture_url || "https://cdn.discordapp.com/attachments/1156985446161711165/1296157593051594773/1_lgZkB5FIZEqR6v-h_ZpCNw.png?ex=67114453&is=670ff2d3&hm=c45ab66a8a6a146b8d398feb08cee329dba9ec207d6fd9813482dbe7c8a84f15&"}
+                        src={mapAvatarUrl(user?.avatar_url) || "../../../public/images/default-avatar.png"}
                         alt="Avatar"
                         className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                       />
@@ -133,7 +170,7 @@ const Navbar: React.FC = () => {
                   {/* Options du menu */}
                   <div className="py-2">
                     <Link
-                      to="/profile"
+                      to="/dashboard/player/profile"
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                     >
@@ -152,6 +189,17 @@ const Navbar: React.FC = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       Mes Événements
+                    </Link>
+                    
+                    <Link
+                      to={getDashboardPath(user?.role || 'player')}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      {getDashboardLabel(user?.role || 'player')}
                     </Link>
                     
                     <div className="border-t border-gray-100 my-2"></div>

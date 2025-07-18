@@ -7,13 +7,14 @@ import {
   DEBUG_CONFIG 
 } from "../config/api.config";
 import Cookies from "js-cookie";
+import { imageUploadService } from "./imageUploadService";
 
 // Configuration de l'API avec les variables d'environnement
 const api = axios.create({
   baseURL: getAuthUrl(),
   timeout: API_CONFIG.TIMEOUTS.DEFAULT,
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   }
 });
 
@@ -66,6 +67,30 @@ api.interceptors.response.use(
   }
 );
 
+const API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL || "http://localhost:8080";
+console.log("[DEBUG] API_GATEWAY_URL =", API_GATEWAY_URL);
+
+export function mapAvatarUrl(avatarUrl: string | null | undefined): string | null {
+  if (!avatarUrl) return null;
+
+  // Si l'URL est déjà absolue mais pointe sur le mauvais host (localhost:3000), on la remplace
+  if (avatarUrl.startsWith('http://localhost:3000/')) {
+    // On extrait juste le chemin après le host
+    const path = avatarUrl.replace('http://localhost:3000', '');
+    if (path.startsWith('/api/v1/avatars') || path.startsWith('/avatars/')) {
+      return `${API_GATEWAY_URL}${path}`;
+    }
+  }
+
+  if (avatarUrl.startsWith('/avatars/')) {
+    return `${API_GATEWAY_URL}/api/v1${avatarUrl}`;
+  }
+  if (avatarUrl.startsWith('/api/v1/avatars')) {
+    return `${API_GATEWAY_URL}${avatarUrl}`;
+  }
+  return avatarUrl;
+}
+
 const UserService = {
   /**
    * Récupère le profil de l'utilisateur actuel
@@ -90,14 +115,54 @@ const UserService = {
       // L'API retourne { user: UserProfile } selon le proto
       const userData = response.data.user || response.data;
       
+      // DEBUG: Afficher les données brutes avant mapping
+      console.log("🔍 DEBUG - Données brutes de l'API:", userData);
+      console.log("🔍 DEBUG - Structure de userData:", {
+        firstname: userData.firstname,
+        lastname: userData.lastname,
+        pseudonyme: userData.pseudonyme,
+        email: userData.email,
+        role: userData.role,
+        avatar_url: userData.avatar_url,
+        phone: userData.phone,
+        phone_number: userData.phone_number
+      });
+      
       // Mapper les données du protobuf vers notre interface TypeScript
       const mappedProfile: UserProfile = {
         firstname: userData.firstname || "",
         lastname: userData.lastname || "",
         pseudonyme: userData.pseudonyme || userData.pseudoname || "",
         email: userData.email || "",
-        role: userData.role || "player",
-        profile_picture_url: userData.avatar_url || userData.profile_picture_url || null,
+        role: (() => {
+          // Priorité au rôle du token JWT
+          try {
+            const token = Cookies.get(JWT_CONFIG.COOKIE_NAME);
+            if (token) {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              if (payload.role) {
+                console.log("DEBUG: Rôle extrait du token JWT:", payload.role);
+                return payload.role;
+              }
+            }
+          } catch (e) {
+            console.warn("Impossible d'extraire le rôle du token JWT:", e);
+          }
+          // Fallback sur le rôle de l'API
+          console.log("DEBUG: Rôle de l'API Gateway:", userData.role);
+          return userData.role || "";
+        })(),
+        avatar_url: (() => {
+          const avatarUrl = userData.avatar_url;
+          if (!avatarUrl) return null;
+          
+          // Si l'URL commence par /avatars/, la transformer pour pointer vers l'API Gateway
+          if (avatarUrl.startsWith('/avatars/')) {
+            return `${API_GATEWAY_URL}/api/v1${avatarUrl}`;
+          }
+          
+          return avatarUrl;
+        })(),
         phone_number: userData.phone || userData.phone_number || null,
         preferences: {
           notifications: userData.preferences?.email_notifications ?? true,
@@ -108,6 +173,9 @@ const UserService = {
       if (DEBUG_CONFIG.ENABLED) {
         console.log("Profil mappé:", mappedProfile);
       }
+      
+      // DEBUG: Afficher le profil final
+      console.log("🔍 DEBUG - Profil final mappé:", mappedProfile);
       
       return mappedProfile;
       
@@ -148,6 +216,20 @@ const UserService = {
       // Décoder le token JWT (partie payload)
       const payload = JSON.parse(atob(token.split('.')[1]));
       
+      // DEBUG: Afficher le contenu du token JWT
+      console.log("🔍 DEBUG - Token JWT payload:", payload);
+      console.log("🔍 DEBUG - Champs du token:", {
+        userID: payload.userID,
+        sub: payload.sub,
+        email: payload.email,
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        pseudonyme: payload.pseudonyme,
+        role: payload.role,
+        roles: payload.roles,
+        authorities: payload.authorities
+      });
+      
       // Extraire l'email depuis le token
       const tokenEmail = payload.email || payload.sub;
       const emailUsername = tokenEmail?.includes('@') ? tokenEmail.split('@')[0] : null;
@@ -158,8 +240,18 @@ const UserService = {
         lastname: payload.lastname || payload.family_name || payload.name?.split(' ').slice(1).join(' ') || "", 
         pseudonyme: payload.pseudonyme || payload.username || payload.preferred_username || emailUsername || "utilisateur",
         email: tokenEmail || "user@example.com",
-        role: payload.role || payload.roles?.[0] || payload.authorities?.[0] || "player",
-        profile_picture_url: payload.picture || payload.avatar_url || null,
+        role: payload.role || payload.roles?.[0] || payload.authorities?.[0],
+        avatar_url: (() => {
+          const avatarUrl = payload.picture || payload.avatar_url;
+          if (!avatarUrl) return null;
+          
+          // Si l'URL commence par /avatars/, la transformer pour pointer vers l'API Gateway
+          if (avatarUrl.startsWith('/avatars/')) {
+            return `${API_GATEWAY_URL}/api/v1${avatarUrl}`;
+          }
+          
+          return avatarUrl;
+        })(),
         phone_number: payload.phone_number || payload.phone || null,
         preferences: {
           notifications: payload.notifications ?? true,
@@ -170,6 +262,9 @@ const UserService = {
       if (DEBUG_CONFIG.ENABLED) {
         console.log("Profil créé depuis le token JWT:", profile);
       }
+      
+      // DEBUG: Afficher le profil créé depuis le token
+      console.log("🔍 DEBUG - Profil créé depuis le token JWT:", profile);
 
       return profile;
       
@@ -183,7 +278,7 @@ const UserService = {
         pseudonyme: "utilisateur", 
         email: "user@example.com",
         role: "player",
-        profile_picture_url: null,
+        avatar_url: null,
         phone_number: null,
         preferences: {
           notifications: true,
@@ -223,8 +318,18 @@ const UserService = {
         lastname: updatedUser.lastname || "",
         pseudonyme: updatedUser.pseudonyme || updatedUser.pseudoname || "",
         email: updatedUser.email || "",
-        role: updatedUser.role || "player",
-        profile_picture_url: updatedUser.avatar_url || updatedUser.profile_picture_url || null,
+        role: updatedUser.role,
+        avatar_url: (() => {
+          const avatarUrl = updatedUser.avatar_url;
+          if (!avatarUrl) return null;
+          
+          // Si l'URL commence par /avatars/, la transformer pour pointer vers l'API Gateway
+          if (avatarUrl.startsWith('/avatars/')) {
+            return `${API_GATEWAY_URL}/api/v1${avatarUrl}`;
+          }
+          
+          return avatarUrl;
+        })(),
         phone_number: updatedUser.phone || updatedUser.phone_number || null,
         preferences: {
           notifications: updatedUser.preferences?.email_notifications ?? true,
@@ -262,23 +367,42 @@ const UserService = {
 
   /**
    * Upload d'une photo de profil
-   * Solution temporaire : conversion en base64
-   * TODO: Implémenter un vrai service d'upload (Cloudinary, AWS S3, etc.)
+   * Envoie l'image au backend sous forme { avatar_data, avatar_filename }
    */
   uploadProfilePicture: async (file: File): Promise<string> => {
     try {
-      // Solution temporaire : convertir l'image en base64
-      return new Promise((resolve, reject) => {
+      // Optimiser l'image avant conversion
+      const optimizedFile = await imageUploadService.optimizeImage(file, 400, 400, 0.8);
+      // Convertir en base64
+      const base64String: string = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
-          const base64String = reader.result as string;
-          resolve(base64String);
+          const result = reader.result as string;
+          // On retire le préfixe data:image/...;base64,
+          const base64 = result.split(',')[1];
+          resolve(base64);
         };
         reader.onerror = () => {
           reject(new Error("Erreur lors de la lecture du fichier"));
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(optimizedFile);
       });
+      // Appel API pour upload
+      const userID = UserService.getUserIDFromToken();
+      if (!userID) throw new Error("Impossible de récupérer l'ID utilisateur pour l'upload d'avatar");
+      const response = await api.post(`/users/${userID}/avatar`, {
+        avatar_data: base64String,
+        avatar_filename: optimizedFile.name
+      });
+      if (DEBUG_CONFIG.ENABLED) {
+        console.log("Réponse upload avatar:", response.data);
+      }
+      // Retourner l'URL de l'avatar en s'assurant qu'elle pointe vers l'API Gateway
+      const avatarUrl = response.data.avatar_url || response.data.url;
+      if (avatarUrl && avatarUrl.startsWith('/avatars/')) {
+        return `${API_GATEWAY_URL}/api/v1${avatarUrl}`;
+      }
+      return avatarUrl;
     } catch (error) {
       console.error("Erreur lors de l'upload de la photo:", error);
       throw error;
@@ -299,7 +423,7 @@ const UserService = {
       }
 
       // Mettre à jour le profil avec avatar_url = ""
-      await UserService.updateUserProfile({ profile_picture_url: "" });
+      await UserService.updateUserProfile({ avatar_url: "" });
       
       if (DEBUG_CONFIG.ENABLED) {
         console.log("Photo de profil supprimée");
@@ -366,8 +490,8 @@ const UserService = {
         lastname: userData.lastname || "",
         pseudonyme: userData.pseudonyme || userData.pseudoname || "",
         email: userData.email || "",
-        role: userData.role || "player",
-        profile_picture_url: userData.avatar_url || userData.profile_picture_url || null,
+        role: userData.role,
+        avatar_url: mapAvatarUrl(userData.avatar_url || userData.profile_picture_url),
         phone_number: userData.phone || userData.phone_number || null,
         preferences: {
           notifications: userData.preferences?.email_notifications ?? true,
@@ -402,8 +526,8 @@ const UserService = {
         lastname: userData.lastname || "",
         pseudonyme: userData.pseudonyme || userData.pseudoname || "",
         email: userData.email || "",
-        role: userData.role || "player",
-        profile_picture_url: userData.avatar_url || userData.profile_picture_url || null,
+        role: userData.role,
+        avatar_url: mapAvatarUrl(userData.avatar_url || userData.profile_picture_url),
         phone_number: userData.phone || userData.phone_number || null,
         preferences: {
           notifications: userData.preferences?.email_notifications ?? true,
@@ -473,14 +597,14 @@ const UserService = {
       return {
         firstname: createdUser.firstname || "",
         lastname: createdUser.lastname || "",
-        pseudonyme: createdUser.pseudonyme || "",
+        pseudonyme: createdUser.pseudonyme || createdUser.pseudoname || "",
         email: createdUser.email || "",
-        role: createdUser.role || "player",
-        profile_picture_url: createdUser.avatar_url || null,
-        phone_number: createdUser.phone || null,
+        role: createdUser.role,
+        avatar_url: mapAvatarUrl(createdUser.avatar_url),
+        phone_number: createdUser.phone || createdUser.phone_number || null,
         preferences: {
-          notifications: true,
-          language: "fr"
+          notifications: createdUser.preferences?.email_notifications ?? true,
+          language: createdUser.preferences?.language || "fr"
         }
       };
     } catch (error) {
