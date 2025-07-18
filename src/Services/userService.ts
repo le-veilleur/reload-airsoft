@@ -390,7 +390,7 @@ const UserService = {
       // Appel API pour upload
       const userID = UserService.getUserIDFromToken();
       if (!userID) throw new Error("Impossible de récupérer l'ID utilisateur pour l'upload d'avatar");
-      const response = await api.post(`/users/${userID}/avatar`, {
+      const response = await api.post(`/${userID}/avatar`, {
         avatar_data: base64String,
         avatar_filename: optimizedFile.name
       });
