@@ -111,6 +111,7 @@ export interface User {
 }
 
 export interface UserProfile {
+  id?: string;
   firstname: string;
   lastname: string;
   pseudonyme: string;

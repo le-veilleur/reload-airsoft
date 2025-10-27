@@ -335,7 +335,7 @@ const CreateEventPage: React.FC = () => {
         start_date: formattedStartDate,
         end_date: formattedEndDate,
         max_participants: formData.maxParticipants,
-        organizer_id: "", // Sera généré par l'API Gateway
+        organizer_id: user?.id || "", // ID de l'utilisateur connecté
         category_ids: formData.category ? [formData.category] : [],
         image_urls: imageUrls,
         event_type: formData.eventType,

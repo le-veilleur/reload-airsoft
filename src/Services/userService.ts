@@ -130,6 +130,7 @@ const UserService = {
       
       // Mapper les données du protobuf vers notre interface TypeScript
       const mappedProfile: UserProfile = {
+        id: userData.id || userID, // Utiliser l'ID de l'API ou le userID du token
         firstname: userData.firstname || "",
         lastname: userData.lastname || "",
         pseudonyme: userData.pseudonyme || userData.pseudoname || "",
@@ -236,6 +237,7 @@ const UserService = {
       
       // Créer un profil à partir des données du token
       const profile: UserProfile = {
+        id: payload.userID || payload.sub || payload.user_id || payload.id, // Extraire l'ID du token
         firstname: payload.firstname || payload.given_name || payload.name?.split(' ')[0] || "Utilisateur",
         lastname: payload.lastname || payload.family_name || payload.name?.split(' ').slice(1).join(' ') || "", 
         pseudonyme: payload.pseudonyme || payload.username || payload.preferred_username || emailUsername || "utilisateur",

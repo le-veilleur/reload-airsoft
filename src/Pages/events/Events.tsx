@@ -12,6 +12,7 @@ import ClearCacheWidget from "../../Components/Admin/ClearCacheWidget";
 import EventFilters, { EventFilters as EventFiltersType } from "../../Components/Events/EventFilters";
 import AddEventButton from "../../Components/Events/AddEventButton";
 import { getFilteredEvents } from "../../Services/eventService";
+import { formatDateToFrench, extractTimeFromDate } from "../../utils/dateUtils";
 
 const EventsPage: React.FC = () => {
   const location = useLocation();
@@ -276,8 +277,9 @@ const EventsPage: React.FC = () => {
                   <EventCard
                     id={event.id}
                     title={(event as any).title || 'Titre non spécifié'}
-                    date={(event as any).date || 'Date non spécifiée'}
-                    time={(event as any).created_at ? new Date((event as any).created_at).toLocaleTimeString() : "Non spécifié"}
+                    date={formatDateToFrench((event as any).start_date || (event as any).date) || 'Date non spécifiée'}
+                    time={extractTimeFromDate((event as any).start_date || "") || "Heure non spécifiée"}
+                    endTime={extractTimeFromDate((event as any).end_date || "")}
                     location={(event as any).location || { address: 'Lieu non spécifié', latitude: 0, longitude: 0 }}
                     images={(event as any).image_urls || []}
                     description={(event as any).description || 'Description non disponible'}
