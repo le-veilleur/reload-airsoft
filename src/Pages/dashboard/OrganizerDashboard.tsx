@@ -63,13 +63,13 @@ const OrganizerDashboard: React.FC = () => {
   }, []);
 
   const StatCard = ({ title, value, icon, color }: { title: string; value: string | number; icon: string; color: string }) => (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border-l-4 ${color}`}>
+    <div className={`bg-white p-4 rounded-xl shadow-soft border-l-4 ${color}`}>
       <div className="flex items-center">
         <div className="flex-shrink-0">
-          <span className="text-2xl">{icon}</span>
+          <span className="text-xl">{icon}</span>
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
+        <div className="ml-3">
+          <p className="text-xs font-medium text-gray-600">{title}</p>
           <p className="text-2xl font-bold text-gray-900">{value}</p>
         </div>
       </div>
@@ -77,10 +77,10 @@ const OrganizerDashboard: React.FC = () => {
   );
 
   const EventCard = ({ event }: { event: any }) => (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+    <div className="bg-white p-3 rounded-xl shadow-soft border border-gray-200">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">{event.title}</h3>
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+        <h3 className="font-medium text-sm text-gray-900">{event.title}</h3>
+        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
           event.status === 'active' ? 'bg-green-100 text-green-800' :
           event.status === 'full' ? 'bg-red-100 text-red-800' :
           'bg-blue-100 text-blue-800'
@@ -88,16 +88,16 @@ const OrganizerDashboard: React.FC = () => {
           {event.status === 'active' ? 'Actif' : event.status === 'full' ? 'Complet' : 'À venir'}
         </span>
       </div>
-      <p className="text-sm text-gray-600 mb-2">Date: {event.date}</p>
-      <p className="text-sm text-gray-600 mb-2">
+      <p className="text-xs text-gray-600 mb-1.5">Date: {event.date}</p>
+      <p className="text-xs text-gray-600 mb-1.5">
         Participants: {event.participants}/{event.maxParticipants}
       </p>
-      <p className="text-sm text-gray-600 mb-3">Revenus: {event.revenue}€</p>
+      <p className="text-xs text-gray-600 mb-2">Revenus: {event.revenue}€</p>
       <div className="flex space-x-2">
-        <button className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded hover:bg-blue-200">
+        <button className="px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200">
           Gérer
         </button>
-        <button className="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded hover:bg-green-200">
+        <button className="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-lg hover:bg-green-200">
           Voir participants
         </button>
         <button 
@@ -130,114 +130,137 @@ const OrganizerDashboard: React.FC = () => {
 
   return (
     <DashboardLayout userRole="organizer">
-      <div className="space-y-6">
+      <div className="space-y-4 pb-12">
         {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Organisateur</h1>
-          <p className="mt-2 text-gray-600">Gérez vos événements et participants</p>
+        <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 rounded-xl shadow-strong p-5 text-white">
+          <h1 className="text-2xl md:text-3xl font-bold mb-1">Dashboard Organisateur</h1>
+          <p className="text-orange-100 text-sm">Gérez vos événements et participants</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-2.5 h-2.5 bg-green-400 rounded-full"></div>
+              <span className="text-xs">{stats.activeEvents} événement(s) actif(s)</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2.5 h-2.5 bg-blue-400 rounded-full"></div>
+              <span className="text-xs">{stats.totalParticipants} participants au total</span>
+            </div>
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Organizer Stats - Focus on Events Management */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard
-            title="Événements totaux"
-            value={stats.totalEvents}
-            icon="🎯"
-            color="border-blue-500"
-          />
-          <StatCard
-            title="Événements actifs"
+            title="Actifs"
             value={stats.activeEvents}
             icon="🔥"
             color="border-green-500"
           />
           <StatCard
-            title="Participants totaux"
+            title="À venir"
+            value={stats.upcomingEvents}
+            icon="📅"
+            color="border-blue-500"
+          />
+          <StatCard
+            title="Participants"
             value={stats.totalParticipants}
             icon="👥"
             color="border-purple-500"
           />
           <StatCard
-            title="Revenus totaux (€)"
-            value={stats.totalRevenue.toLocaleString()}
+            title="Revenus"
+            value={`${stats.totalRevenue}€`}
             icon="💰"
             color="border-emerald-500"
           />
           <StatCard
-            title="Événements à venir"
-            value={stats.upcomingEvents}
-            icon="📅"
+            title="Total événements"
+            value={stats.totalEvents}
+            icon="🎯"
             color="border-yellow-500"
           />
         </div>
 
-        {/* Events & Participants */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* My Events */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+        {/* Main Content - Event Management Focus */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* My Events - Main Focus */}
+          <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-soft p-5 border border-white/20">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Mes événements</h2>
+              <h2 className="text-lg font-bold text-gray-900 flex items-center">
+                <span className="mr-2">🎯</span>
+                Mes événements en cours
+              </h2>
               <button 
                 onClick={() => navigate('/events/create')}
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
               >
-                Créer un événement
+                + Créer
               </button>
             </div>
-            <div className="space-y-4">
-              {myEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
+            <div className="space-y-3">
+              {myEvents.length > 0 ? (
+                myEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-sm">Aucun événement</p>
+                  <button 
+                    onClick={() => navigate('/events/create')}
+                    className="mt-3 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  >
+                    Créer mon premier événement
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Recent Participants */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Participants récents</h2>
-              <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                {recentParticipants.length} nouveaux
-              </span>
+          {/* Sidebar - Participants & Actions */}
+          <div className="space-y-4">
+            {/* Recent Participants */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-soft p-4 border border-white/20">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-gray-900 flex items-center">
+                  <span className="mr-2">👥</span>
+                  Inscriptions récentes
+                </h3>
+                <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                  {recentParticipants.length}
+                </span>
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {recentParticipants.map((participant) => (
+                  <ParticipantCard key={participant.id} participant={participant} />
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {recentParticipants.map((participant) => (
-                <ParticipantCard key={participant.id} participant={participant} />
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button 
-              onClick={() => navigate('/events/create')}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="text-center">
-                <span className="text-2xl">🎯</span>
-                <p className="mt-2 text-sm font-medium text-gray-900">Créer événement</p>
+            {/* Quick Actions */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-soft p-4 border border-orange-200">
+              <h3 className="text-sm font-bold text-gray-900 mb-3">Actions rapides</h3>
+              <div className="space-y-2">
+                <button 
+                  onClick={() => navigate('/events/create')}
+                  className="w-full px-3 py-2 text-xs font-medium bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center"
+                >
+                  <span className="mr-2">➕</span>
+                  Créer un événement
+                </button>
+                <button className="w-full px-3 py-2 text-xs font-medium bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center">
+                  <span className="mr-2">👥</span>
+                  Gérer les participants
+                </button>
+                <button className="w-full px-3 py-2 text-xs font-medium bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center">
+                  <span className="mr-2">💰</span>
+                  Voir les finances
+                </button>
+                <button className="w-full px-3 py-2 text-xs font-medium bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center">
+                  <span className="mr-2">📊</span>
+                  Statistiques
+                </button>
               </div>
-            </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-center">
-                <span className="text-2xl">👥</span>
-                <p className="mt-2 text-sm font-medium text-gray-900">Gérer participants</p>
-              </div>
-            </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-center">
-                <span className="text-2xl">📊</span>
-                <p className="mt-2 text-sm font-medium text-gray-900">Voir statistiques</p>
-              </div>
-            </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-center">
-                <span className="text-2xl">⚙️</span>
-                <p className="mt-2 text-sm font-medium text-gray-900">Paramètres</p>
-              </div>
-            </button>
+            </div>
           </div>
         </div>
       </div>
